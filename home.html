@@ -1,0 +1,1931 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS 365 - 家校协同场景解决方案</title>
+    <meta name="description" content="WPS 365家校协同场景解决方案，为中小学提供高效的家校沟通平台">
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f8f5ff',
+                            100: '#f0eaff',
+                            200: '#e2d5ff',
+                            300: '#c8b1ff',
+                            400: '#a77eff',
+                            500: '#8c4bff',
+                            600: '#7928ff',
+                            700: '#6c15f0',
+                            800: '#5c10cb',
+                            900: '#4c0da6',
+                        },
+                        accent: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            300: '#f9a8d4',
+                            400: '#f472b6',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            800: '#9d174d',
+                            900: '#831843',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans SC"', 'sans-serif'],
+                        display: ['"M PLUS Rounded 1c"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'wave': 'wave 12s linear infinite',
+                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 1s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'bounce-slow': 'bounce 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        wave: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '25%': { transform: 'translateY(-8px)' },
+                            '75%': { transform: 'translateY(8px)' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;family=M+PLUS+Rounded+1c:wght@400;700;900&amp;display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #0ea5e9;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+        
+        /* Curved sections */
+        .curve-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+        
+        .curve-top svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 70px;
+        }
+        
+        .curve-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+        
+        .curve-bottom svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 70px;
+        }
+        
+        /* Loading animation */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        
+        .loader-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+        
+        .loader:before, .loader:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #0ea5e9;
+            opacity: 0.6;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .loader:after {
+            animation-delay: -1s;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        
+        /* Card hover effect with smooth transitions */
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px);
+        }
+        
+        /* Button hover effect */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+        
+        .btn-primary:hover:before {
+            left: 100%;
+        }
+        
+        /* Highlight text animation */
+        .highlight {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .highlight::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 3px;
+            bottom: 0;
+            left: 0;
+            background-color: #8c4bff;
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+        
+        .highlight:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes wave {
+            0% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-8px) rotate(2deg); }
+            50% { transform: translateY(0) rotate(0deg); }
+            75% { transform: translateY(8px) rotate(-2deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .waving {
+            animation: wave 12s linear infinite;
+        }
+        
+        /* Irregular shapes */
+        .blob {
+            border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+        }
+        
+        .blob-2 {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+        
+        /* Custom gradients */
+        .gradient-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #8c4bff 100%);
+        }
+        
+        .gradient-secondary {
+            background: linear-gradient(135deg, #7928ff 0%, #ff0080 100%);
+        }
+        
+        /* Parallax effect */
+        .parallax {
+            perspective: 1000px;
+            height: 100vh;
+        }
+        
+        .parallax__layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        
+        .parallax__layer--back {
+            transform: translateZ(-300px) scale(2);
+        }
+        
+        .parallax__layer--base {
+            transform: translateZ(0);
+        }
+        
+        .parallax__layer--fore {
+            transform: translateZ(200px) scale(0.8);
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.16 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:"Noto Sans SC", sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.container{width:100%}@media (min-width: 640px){.container{max-width:640px}}@media (min-width: 768px){.container{max-width:768px}}@media (min-width: 1024px){.container{max-width:1024px}}@media (min-width: 1280px){.container{max-width:1280px}}@media (min-width: 1536px){.container{max-width:1536px}}.visible{visibility:visible}.invisible{visibility:hidden}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.-bottom-10{bottom:-2.5rem}.-bottom-20{bottom:-5rem}.-bottom-24{bottom:-6rem}.-bottom-6{bottom:-1.5rem}.-left-20{left:-5rem}.-left-24{left:-6rem}.-left-6{left:-1.5rem}.-right-10{right:-2.5rem}.-right-12{right:-3rem}.-right-20{right:-5rem}.-right-24{right:-6rem}.-top-20{top:-5rem}.-top-24{top:-6rem}.bottom-0{bottom:0px}.bottom-10{bottom:2.5rem}.bottom-20{bottom:5rem}.bottom-24{bottom:6rem}.bottom-32{bottom:8rem}.bottom-8{bottom:2rem}.left-0{left:0px}.left-1\/2{left:50%}.left-1\/4{left:25%}.left-10{left:2.5rem}.left-8{left:2rem}.right-0{right:0px}.right-10{right:2.5rem}.right-20{right:5rem}.right-4{right:1rem}.right-8{right:2rem}.top-0{top:0px}.top-1\/2{top:50%}.top-1\/3{top:33.333333%}.top-1\/4{top:25%}.top-20{top:5rem}.top-24{top:6rem}.top-4{top:1rem}.z-0{z-index:0}.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}.col-span-1{grid-column:span 1 / span 1}.mx-auto{margin-left:auto;margin-right:auto}.my-12{margin-top:3rem;margin-bottom:3rem}.mb-1{margin-bottom:0.25rem}.mb-10{margin-bottom:2.5rem}.mb-16{margin-bottom:4rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.ml-2{margin-left:0.5rem}.ml-3{margin-left:0.75rem}.ml-4{margin-left:1rem}.ml-auto{margin-left:auto}.mr-2{margin-right:0.5rem}.mr-3{margin-right:0.75rem}.mr-4{margin-right:1rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-20{margin-top:5rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-1\.5{height:0.375rem}.h-1\/3{height:33.333333%}.h-10{height:2.5rem}.h-12{height:3rem}.h-16{height:4rem}.h-20{height:5rem}.h-3{height:0.75rem}.h-32{height:8rem}.h-48{height:12rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-8{height:2rem}.h-80{height:20rem}.h-96{height:24rem}.min-h-\[90vh\]{min-height:90vh}.w-1{width:0.25rem}.w-1\.5{width:0.375rem}.w-1\/3{width:33.333333%}.w-10{width:2.5rem}.w-12{width:3rem}.w-16{width:4rem}.w-3{width:0.75rem}.w-48{width:12rem}.w-6{width:1.5rem}.w-64{width:16rem}.w-8{width:2rem}.w-80{width:20rem}.w-96{width:24rem}.w-full{width:100%}.min-w-full{min-width:100%}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-md{max-width:28rem}.max-w-xl{max-width:36rem}.max-w-xs{max-width:20rem}.flex-shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-x-1\/3{--tw-translate-x:-33.333333%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-2{--tw-translate-y:-0.5rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-1\/3{--tw-translate-x:33.333333%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-x-2{--tw-translate-x:0.5rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.translate-y-1\/2{--tw-translate-y:50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-rotate-6{--tw-rotate:-6deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-12{--tw-rotate:12deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-3{--tw-rotate:3deg;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes bounce{0%, 100%{transform:translateY(-25%);animation-timing-function:cubic-bezier(0.8,0,1,1)}50%{transform:none;animation-timing-function:cubic-bezier(0,0,0.2,1)}}.animate-bounce{animation:bounce 1s infinite}@keyframes bounce{0%, 100%{transform:translateY(-25%);animation-timing-function:cubic-bezier(0.8,0,1,1)}50%{transform:none;animation-timing-function:cubic-bezier(0,0,0.2,1)}}.animate-bounce-slow{animation:bounce 3s infinite}@keyframes pulse{50%{opacity:.5}}.animate-pulse-slow{animation:pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-7{grid-template-columns:repeat(7, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.justify-around{justify-content:space-around}.gap-1{gap:0.25rem}.gap-10{gap:2.5rem}.gap-12{gap:3rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-4 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1rem * var(--tw-space-x-reverse));margin-left:calc(1rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-6 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(1.5rem * var(--tw-space-x-reverse));margin-left:calc(1.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-8 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(2rem * var(--tw-space-x-reverse));margin-left:calc(2rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.divide-y > :not([hidden]) ~ :not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px * calc(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px * var(--tw-divide-y-reverse))}.divide-gray-200 > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(229 231 235 / var(--tw-divide-opacity, 1))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-x-hidden{overflow-x:hidden}.whitespace-nowrap{white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.rounded-bl-full{border-bottom-left-radius:9999px}.rounded-tr-full{border-top-right-radius:9999px}.border{border-width:1px}.border-2{border-width:2px}.border-4{border-width:4px}.border-t{border-top-width:1px}.border-gray-100{--tw-border-opacity:1;border-color:rgb(243 244 246 / var(--tw-border-opacity, 1))}.border-gray-400{--tw-border-opacity:1;border-color:rgb(156 163 175 / var(--tw-border-opacity, 1))}.border-gray-800{--tw-border-opacity:1;border-color:rgb(31 41 55 / var(--tw-border-opacity, 1))}.border-primary-600{--tw-border-opacity:1;border-color:rgb(2 132 199 / var(--tw-border-opacity, 1))}.border-white\/20{border-color:rgb(255 255 255 / 0.2)}.bg-accent-100{--tw-bg-opacity:1;background-color:rgb(252 231 243 / var(--tw-bg-opacity, 1))}.bg-accent-200{--tw-bg-opacity:1;background-color:rgb(251 207 232 / var(--tw-bg-opacity, 1))}.bg-accent-400{--tw-bg-opacity:1;background-color:rgb(244 114 182 / var(--tw-bg-opacity, 1))}.bg-accent-50{--tw-bg-opacity:1;background-color:rgb(253 242 248 / var(--tw-bg-opacity, 1))}.bg-accent-500{--tw-bg-opacity:1;background-color:rgb(236 72 153 / var(--tw-bg-opacity, 1))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.bg-gray-400{--tw-bg-opacity:1;background-color:rgb(156 163 175 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.bg-green-500{--tw-bg-opacity:1;background-color:rgb(34 197 94 / var(--tw-bg-opacity, 1))}.bg-primary-100{--tw-bg-opacity:1;background-color:rgb(224 242 254 / var(--tw-bg-opacity, 1))}.bg-primary-200{--tw-bg-opacity:1;background-color:rgb(186 230 253 / var(--tw-bg-opacity, 1))}.bg-primary-300{--tw-bg-opacity:1;background-color:rgb(125 211 252 / var(--tw-bg-opacity, 1))}.bg-primary-400{--tw-bg-opacity:1;background-color:rgb(56 189 248 / var(--tw-bg-opacity, 1))}.bg-primary-50{--tw-bg-opacity:1;background-color:rgb(240 249 255 / var(--tw-bg-opacity, 1))}.bg-primary-500{--tw-bg-opacity:1;background-color:rgb(14 165 233 / var(--tw-bg-opacity, 1))}.bg-primary-600{--tw-bg-opacity:1;background-color:rgb(2 132 199 / var(--tw-bg-opacity, 1))}.bg-primary-700{--tw-bg-opacity:1;background-color:rgb(3 105 161 / var(--tw-bg-opacity, 1))}.bg-red-500{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity, 1))}.bg-secondary-100{--tw-bg-opacity:1;background-color:rgb(240 234 255 / var(--tw-bg-opacity, 1))}.bg-secondary-200{--tw-bg-opacity:1;background-color:rgb(226 213 255 / var(--tw-bg-opacity, 1))}.bg-secondary-400{--tw-bg-opacity:1;background-color:rgb(167 126 255 / var(--tw-bg-opacity, 1))}.bg-secondary-50{--tw-bg-opacity:1;background-color:rgb(248 245 255 / var(--tw-bg-opacity, 1))}.bg-secondary-500{--tw-bg-opacity:1;background-color:rgb(140 75 255 / var(--tw-bg-opacity, 1))}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-white\/10{background-color:rgb(255 255 255 / 0.1)}.bg-white\/20{background-color:rgb(255 255 255 / 0.2)}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8 / var(--tw-bg-opacity, 1))}.bg-gradient-to-b{background-image:linear-gradient(to bottom, var(--tw-gradient-stops))}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.bg-gradient-to-r{background-image:linear-gradient(to right, var(--tw-gradient-stops))}.bg-gradient-to-tr{background-image:linear-gradient(to top right, var(--tw-gradient-stops))}.from-accent-500{--tw-gradient-from:#ec4899 var(--tw-gradient-from-position);--tw-gradient-to:rgb(236 72 153 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-primary-200{--tw-gradient-from:#bae6fd var(--tw-gradient-from-position);--tw-gradient-to:rgb(186 230 253 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-primary-500{--tw-gradient-from:#0ea5e9 var(--tw-gradient-from-position);--tw-gradient-to:rgb(14 165 233 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-primary-600{--tw-gradient-from:#0284c7 var(--tw-gradient-from-position);--tw-gradient-to:rgb(2 132 199 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-primary-600\/10{--tw-gradient-from:rgb(2 132 199 / 0.1) var(--tw-gradient-from-position);--tw-gradient-to:rgb(2 132 199 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-secondary-200{--tw-gradient-from:#e2d5ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(226 213 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-secondary-500{--tw-gradient-from:#8c4bff var(--tw-gradient-from-position);--tw-gradient-to:rgb(140 75 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-secondary-600{--tw-gradient-from:#7928ff var(--tw-gradient-from-position);--tw-gradient-to:rgb(121 40 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-accent-200{--tw-gradient-to:#fbcfe8 var(--tw-gradient-to-position)}.to-accent-500{--tw-gradient-to:#ec4899 var(--tw-gradient-to-position)}.to-accent-600{--tw-gradient-to:#db2777 var(--tw-gradient-to-position)}.to-accent-700{--tw-gradient-to:#be185d var(--tw-gradient-to-position)}.to-primary-500{--tw-gradient-to:#0ea5e9 var(--tw-gradient-to-position)}.to-primary-700{--tw-gradient-to:#0369a1 var(--tw-gradient-to-position)}.to-secondary-200{--tw-gradient-to:#e2d5ff var(--tw-gradient-to-position)}.to-secondary-500{--tw-gradient-to:#8c4bff var(--tw-gradient-to-position)}.to-secondary-600{--tw-gradient-to:#7928ff var(--tw-gradient-to-position)}.to-secondary-600\/10{--tw-gradient-to:rgb(121 40 255 / 0.1) var(--tw-gradient-to-position)}.to-secondary-700{--tw-gradient-to:#6c15f0 var(--tw-gradient-to-position)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.bg-clip-text{-webkit-background-clip:text;background-clip:text}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-10{padding-left:2.5rem;padding-right:2.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.px-8{padding-left:2rem;padding-right:2rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-16{padding-top:4rem;padding-bottom:4rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-20{padding-top:5rem;padding-bottom:5rem}.py-24{padding-top:6rem;padding-bottom:6rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pt-4{padding-top:1rem}.text-left{text-align:left}.text-center{text-align:center}.font-display{font-family:"M PLUS Rounded 1c", sans-serif}.font-sans{font-family:"Noto Sans SC", sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-6xl{font-size:3.75rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-tight{line-height:1.25}.tracking-wider{letter-spacing:0.05em}.text-accent-100{--tw-text-opacity:1;color:rgb(252 231 243 / var(--tw-text-opacity, 1))}.text-accent-500{--tw-text-opacity:1;color:rgb(236 72 153 / var(--tw-text-opacity, 1))}.text-accent-600{--tw-text-opacity:1;color:rgb(219 39 119 / var(--tw-text-opacity, 1))}.text-accent-800{--tw-text-opacity:1;color:rgb(157 23 77 / var(--tw-text-opacity, 1))}.text-blue-500{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-emerald-600{--tw-text-opacity:1;color:rgb(5 150 105 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-gray-700{--tw-text-opacity:1;color:rgb(55 65 81 / var(--tw-text-opacity, 1))}.text-gray-800{--tw-text-opacity:1;color:rgb(31 41 55 / var(--tw-text-opacity, 1))}.text-green-500{--tw-text-opacity:1;color:rgb(34 197 94 / var(--tw-text-opacity, 1))}.text-primary-100{--tw-text-opacity:1;color:rgb(224 242 254 / var(--tw-text-opacity, 1))}.text-primary-400{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.text-primary-500{--tw-text-opacity:1;color:rgb(14 165 233 / var(--tw-text-opacity, 1))}.text-primary-600{--tw-text-opacity:1;color:rgb(2 132 199 / var(--tw-text-opacity, 1))}.text-primary-700{--tw-text-opacity:1;color:rgb(3 105 161 / var(--tw-text-opacity, 1))}.text-primary-800{--tw-text-opacity:1;color:rgb(7 89 133 / var(--tw-text-opacity, 1))}.text-secondary-100{--tw-text-opacity:1;color:rgb(240 234 255 / var(--tw-text-opacity, 1))}.text-secondary-500{--tw-text-opacity:1;color:rgb(140 75 255 / var(--tw-text-opacity, 1))}.text-secondary-600{--tw-text-opacity:1;color:rgb(121 40 255 / var(--tw-text-opacity, 1))}.text-secondary-700{--tw-text-opacity:1;color:rgb(108 21 240 / var(--tw-text-opacity, 1))}.text-secondary-800{--tw-text-opacity:1;color:rgb(92 16 203 / var(--tw-text-opacity, 1))}.text-transparent{color:transparent}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-white\/60{color:rgb(255 255 255 / 0.6)}.text-white\/80{color:rgb(255 255 255 / 0.8)}.text-yellow-500{--tw-text-opacity:1;color:rgb(234 179 8 / var(--tw-text-opacity, 1))}.opacity-0{opacity:0}.opacity-10{opacity:0.1}.opacity-20{opacity:0.2}.opacity-30{opacity:0.3}.opacity-40{opacity:0.4}.opacity-60{opacity:0.6}.opacity-90{opacity:0.9}.opacity-100{opacity:1}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[0_-5px_15px_rgba\(0\2c 0\2c 0\2c 0\.1\)\]{--tw-shadow:0 -5px 15px rgba(0,0,0,0.1);--tw-shadow-colored:0 -5px 15px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.blur-3xl{--tw-blur:blur(64px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.duration-500{transition-duration:500ms}.hover\:translate-y-\[-2px\]:hover{--tw-translate-y:-2px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:bg-gray-100:hover{--tw-bg-opacity:1;background-color:rgb(243 244 246 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-gray-50:hover{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.hover\:bg-primary-600:hover{--tw-bg-opacity:1;background-color:rgb(2 132 199 / var(--tw-bg-opacity, 1))}.hover\:bg-primary-700:hover{--tw-bg-opacity:1;background-color:rgb(3 105 161 / var(--tw-bg-opacity, 1))}.hover\:text-accent-700:hover{--tw-text-opacity:1;color:rgb(190 24 93 / var(--tw-text-opacity, 1))}.hover\:text-primary-400:hover{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.hover\:text-primary-600:hover{--tw-text-opacity:1;color:rgb(2 132 199 / var(--tw-text-opacity, 1))}.hover\:text-primary-700:hover{--tw-text-opacity:1;color:rgb(3 105 161 / var(--tw-text-opacity, 1))}.hover\:text-secondary-700:hover{--tw-text-opacity:1;color:rgb(108 21 240 / var(--tw-text-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:shadow-lg:hover{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.hover\:shadow-xl:hover{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.group:hover .group-hover\:translate-y-\[-5px\]{--tw-translate-y:-5px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 768px){.md\:left-32{left:8rem}.md\:right-32{right:8rem}.md\:order-1{order:1}.md\:order-2{order:2}.md\:col-span-4{grid-column:span 4 / span 4}.md\:mb-0{margin-bottom:0px}.md\:mt-0{margin-top:0px}.md\:block{display:block}.md\:flex{display:flex}.md\:hidden{display:none}.md\:w-1\/2{width:50%}.md\:w-24{width:6rem}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:justify-end{justify-content:flex-end}.md\:pl-12{padding-left:3rem}.md\:pr-12{padding-right:3rem}.md\:text-5xl{font-size:3rem;line-height:1}}@media (min-width: 1024px){.lg\:col-span-1{grid-column:span 1 / span 1}.lg\:col-span-3{grid-column:span 3 / span 3}.lg\:block{display:block}.lg\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:text-6xl{font-size:3.75rem;line-height:1}}@media (prefers-color-scheme: dark){.dark\:block{display:block}.dark\:hidden{display:none}.dark\:divide-gray-700 > :not([hidden]) ~ :not([hidden]){--tw-divide-opacity:1;border-color:rgb(55 65 81 / var(--tw-divide-opacity, 1))}.dark\:border-gray-500{--tw-border-opacity:1;border-color:rgb(107 114 128 / var(--tw-border-opacity, 1))}.dark\:border-gray-700{--tw-border-opacity:1;border-color:rgb(55 65 81 / var(--tw-border-opacity, 1))}.dark\:border-primary-400{--tw-border-opacity:1;border-color:rgb(56 189 248 / var(--tw-border-opacity, 1))}.dark\:bg-accent-800{--tw-bg-opacity:1;background-color:rgb(157 23 77 / var(--tw-bg-opacity, 1))}.dark\:bg-accent-900\/50{background-color:rgb(131 24 67 / 0.5)}.dark\:bg-gray-500{--tw-bg-opacity:1;background-color:rgb(107 114 128 / var(--tw-bg-opacity, 1))}.dark\:bg-gray-700{--tw-bg-opacity:1;background-color:rgb(55 65 81 / var(--tw-bg-opacity, 1))}.dark\:bg-gray-700\/50{background-color:rgb(55 65 81 / 0.5)}.dark\:bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.dark\:bg-gray-900{--tw-bg-opacity:1;background-color:rgb(17 24 39 / var(--tw-bg-opacity, 1))}.dark\:bg-primary-800{--tw-bg-opacity:1;background-color:rgb(7 89 133 / var(--tw-bg-opacity, 1))}.dark\:bg-primary-800\/30{background-color:rgb(7 89 133 / 0.3)}.dark\:bg-primary-900\/30{background-color:rgb(12 74 110 / 0.3)}.dark\:bg-primary-900\/40{background-color:rgb(12 74 110 / 0.4)}.dark\:bg-primary-900\/50{background-color:rgb(12 74 110 / 0.5)}.dark\:bg-secondary-800{--tw-bg-opacity:1;background-color:rgb(92 16 203 / var(--tw-bg-opacity, 1))}.dark\:bg-secondary-800\/30{background-color:rgb(92 16 203 / 0.3)}.dark\:bg-secondary-900\/30{background-color:rgb(76 13 166 / 0.3)}.dark\:bg-secondary-900\/40{background-color:rgb(76 13 166 / 0.4)}.dark\:bg-secondary-900\/50{background-color:rgb(76 13 166 / 0.5)}.dark\:from-primary-800{--tw-gradient-from:#075985 var(--tw-gradient-from-position);--tw-gradient-to:rgb(7 89 133 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.dark\:from-primary-800\/20{--tw-gradient-from:rgb(7 89 133 / 0.2) var(--tw-gradient-from-position);--tw-gradient-to:rgb(7 89 133 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.dark\:from-primary-900\/30{--tw-gradient-from:rgb(12 74 110 / 0.3) var(--tw-gradient-from-position);--tw-gradient-to:rgb(12 74 110 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.dark\:from-secondary-800\/20{--tw-gradient-from:rgb(92 16 203 / 0.2) var(--tw-gradient-from-position);--tw-gradient-to:rgb(92 16 203 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.dark\:to-accent-800\/20{--tw-gradient-to:rgb(157 23 77 / 0.2) var(--tw-gradient-to-position)}.dark\:to-secondary-800{--tw-gradient-to:#5c10cb var(--tw-gradient-to-position)}.dark\:to-secondary-800\/20{--tw-gradient-to:rgb(92 16 203 / 0.2) var(--tw-gradient-to-position)}.dark\:to-secondary-900\/30{--tw-gradient-to:rgb(76 13 166 / 0.3) var(--tw-gradient-to-position)}.dark\:text-accent-200{--tw-text-opacity:1;color:rgb(251 207 232 / var(--tw-text-opacity, 1))}.dark\:text-accent-300{--tw-text-opacity:1;color:rgb(249 168 212 / var(--tw-text-opacity, 1))}.dark\:text-accent-400{--tw-text-opacity:1;color:rgb(244 114 182 / var(--tw-text-opacity, 1))}.dark\:text-accent-900{--tw-text-opacity:1;color:rgb(131 24 67 / var(--tw-text-opacity, 1))}.dark\:text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.dark\:text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.dark\:text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.dark\:text-primary-200{--tw-text-opacity:1;color:rgb(186 230 253 / var(--tw-text-opacity, 1))}.dark\:text-primary-300{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.dark\:text-primary-400{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.dark\:text-primary-900{--tw-text-opacity:1;color:rgb(12 74 110 / var(--tw-text-opacity, 1))}.dark\:text-secondary-200{--tw-text-opacity:1;color:rgb(226 213 255 / var(--tw-text-opacity, 1))}.dark\:text-secondary-300{--tw-text-opacity:1;color:rgb(200 177 255 / var(--tw-text-opacity, 1))}.dark\:text-secondary-400{--tw-text-opacity:1;color:rgb(167 126 255 / var(--tw-text-opacity, 1))}.dark\:text-secondary-900{--tw-text-opacity:1;color:rgb(76 13 166 / var(--tw-text-opacity, 1))}.dark\:text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.dark\:hover\:bg-gray-700:hover{--tw-bg-opacity:1;background-color:rgb(55 65 81 / var(--tw-bg-opacity, 1))}.dark\:hover\:text-accent-300:hover{--tw-text-opacity:1;color:rgb(249 168 212 / var(--tw-text-opacity, 1))}.dark\:hover\:text-primary-300:hover{--tw-text-opacity:1;color:rgb(125 211 252 / var(--tw-text-opacity, 1))}.dark\:hover\:text-primary-400:hover{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.dark\:hover\:text-secondary-300:hover{--tw-text-opacity:1;color:rgb(200 177 255 / var(--tw-text-opacity, 1))}}</style><style data-id="immersive-translate-input-injected-css">.immersive-translate-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.immersive-translate-attach-loading::after {
+  content: " ";
+
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-2000%, -50%);
+  z-index: 100;
+}
+
+.immersive-translate-loading-spinner {
+  vertical-align: middle !important;
+  width: 10px !important;
+  height: 10px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  border: 2px rgba(221, 244, 255, 0.6) solid !important;
+  border-top: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-left: 2px rgba(0, 0, 0, 0.375) solid !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  -webkit-animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+  animation: immersive-translate-loading-animation 0.6s infinite linear !important;
+}
+
+@-webkit-keyframes immersive-translate-loading-animation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}
+
+@keyframes immersive-translate-loading-animation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.immersive-translate-input-loading {
+  --loading-color: #f78fb6;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: block;
+  margin: 12px auto;
+  position: relative;
+  color: white;
+  left: -100px;
+  box-sizing: border-box;
+  animation: immersiveTranslateShadowRolling 1.5s linear infinite;
+}
+
+@keyframes immersiveTranslateShadowRolling {
+  0% {
+    box-shadow: 0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  12% {
+    box-shadow: 100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  25% {
+    box-shadow: 110px 0 var(--loading-color), 100px 0 var(--loading-color),
+      0px 0 rgba(255, 255, 255, 0), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  36% {
+    box-shadow: 120px 0 var(--loading-color), 110px 0 var(--loading-color),
+      100px 0 var(--loading-color), 0px 0 rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    box-shadow: 130px 0 var(--loading-color), 120px 0 var(--loading-color),
+      110px 0 var(--loading-color), 100px 0 var(--loading-color);
+  }
+
+  62% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color),
+      120px 0 var(--loading-color), 110px 0 var(--loading-color);
+  }
+
+  75% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      130px 0 var(--loading-color), 120px 0 var(--loading-color);
+  }
+
+  87% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 130px 0 var(--loading-color);
+  }
+
+  100% {
+    box-shadow: 200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0),
+      200px 0 rgba(255, 255, 255, 0), 200px 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.immersive-translate-toast {
+  display: flex;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  right: 0;
+  top: 1%;
+  width: fit-content;
+  padding: 12px 20px;
+  margin: auto;
+  overflow: auto;
+  background: #fef6f9;
+  box-shadow: 0px 4px 10px 0px rgba(0, 10, 30, 0.06);
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.immersive-translate-toast-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.immersive-translate-toast-hidden {
+  margin: 0 20px 0 72px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.immersive-translate-toast-close {
+  color: #666666;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-toast {
+    top: 0;
+    padding: 12px 0px 0 10px;
+  }
+  .immersive-translate-toast-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .immersive-translate-toast-hidden {
+    margin: 10px auto;
+  }
+}
+
+.immersive-translate-modal {
+  display: none;
+  position: fixed;
+  z-index: 2147483647;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+}
+
+.immersive-translate-modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 40px 24px 24px;
+  border: 1px solid #888;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 270px;
+  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu",
+    "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-content {
+    margin: 50% auto !important;
+  }
+}
+
+.immersive-translate-modal .immersive-translate-modal-content-in-input {
+  max-width: 500px;
+}
+.immersive-translate-modal-content-in-input .immersive-translate-modal-body {
+  text-align: left;
+  max-height: unset;
+}
+
+.immersive-translate-modal-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.immersive-translate-modal-body {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #333333;
+  word-break: break-all;
+  margin-top: 24px;
+}
+
+@media screen and (max-width: 768px) {
+  .immersive-translate-modal-body {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+}
+
+.immersive-translate-close {
+  color: #666666;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.immersive-translate-close:hover,
+.immersive-translate-close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.immersive-translate-modal-footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.immersive-translate-btn {
+  width: fit-content;
+  color: #fff;
+  background-color: #ea4c89;
+  border: none;
+  font-size: 16px;
+  margin: 0 8px;
+  padding: 9px 30px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.immersive-translate-btn:hover {
+  background-color: #f082ac;
+}
+.immersive-translate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.immersive-translate-btn:disabled:hover {
+  background-color: #ea4c89;
+}
+
+.immersive-translate-cancel-btn {
+  /* gray color */
+  background-color: rgb(89, 107, 120);
+}
+
+.immersive-translate-cancel-btn:hover {
+  background-color: hsl(205, 20%, 32%);
+}
+
+.immersive-translate-action-btn {
+  background-color: transparent;
+  color: #ea4c89;
+  border: 1px solid #ea4c89;
+}
+
+.immersive-translate-btn svg {
+  margin-right: 5px;
+}
+
+.immersive-translate-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #007bff;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-primary-link {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-drag: none;
+  text-decoration: none;
+  color: #ea4c89;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.immersive-translate-modal input[type="radio"] {
+  margin: 0 6px;
+  cursor: pointer;
+}
+
+.immersive-translate-modal label {
+  cursor: pointer;
+}
+
+.immersive-translate-close-action {
+  position: absolute;
+  top: 2px;
+  right: 0px;
+  cursor: pointer;
+}
+
+.imt-image-status {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 16px !important;
+}
+.imt-image-status img,
+.imt-image-status svg,
+.imt-img-loading {
+  width: 28px !important;
+  height: 28px !important;
+  margin: 0 0 8px 0 !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  position: relative !important;
+}
+.imt-img-loading {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAtFBMVEUAAAD////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////oK74hAAAAPHRSTlMABBMIDyQXHwyBfFdDMSw+OjXCb+5RG51IvV/k0rOqlGRM6KKMhdvNyZBz9MaupmxpWyj437iYd/yJVNZeuUC7AAACt0lEQVRIx53T2XKiUBCA4QYOiyCbiAsuuGBcYtxiYtT3f6/pbqoYHVFO5r+iivpo6DpAWYpqeoFfr9f90DsYAuRSWkFnPO50OgR9PwiCUFcl2GEcx+N/YBh6pvKaefHlUgZd1zVe0NbYcQjGBfzrPE8Xz8aF+71D8gG6DHFPpc4a7xFiCDuhaWgKgGIJQ3d5IMGDrpS4S5KgpIm+en9f6PlAhKby4JwEIxlYJV9h5k5nee9GoxHJ2IDSNB0dwdad1NAxDJ/uXDHYmebdk4PdbkS58CIVHdYSUHTYYRWOJblWSyu2lmy3KNFVJNBhxcuGW4YBVCbYGRZwIooipHsNqjM4FbgOQqQqSKQQU9V8xmi1QlgHqQQ6DDBvRUVCDirs+EzGDGOQTCATgtYTnbCVLgsVgRE0T1QE0qHCFAht2z6dLvJQs3Lo2FQoDxWNUiBhaP4eRgwNkI+dAjVOA/kUrIDwf3CG8NfNOE0eiFotSuo+rBiq8tD9oY4Qzc6YJw99hl1wzpQvD7ef2M8QgnOGJfJw+EltQc+oX2yn907QB22WZcvlUpd143dqQu+8pCJZuGE4xCuPXJqqcs5sNpsI93Rmzym1k4Npk+oD1SH3/a3LOK/JpUBpWfqNySxWzCfNCUITuDG5dtuphrUJ1myeIE9bIsPiKrfqTai5WZxbhtNphYx6GEIHihyGFTI69lje/rxajdh0s0msZ0zYxyPLhYCb1CyHm9Qsd2H37Y3lugVwL9kNh8Ot8cha6fUNQ8nuXi5z9/ExsAO4zQrb/ev1yrCB7lGyQzgYDGuxq1toDN/JGvN+HyWNHKB7zEoK+PX11e12G431erGYzwmytAWU56fkMHY5JJnDRR2eZji3AwtIcrEV8Cojat/BdQ7XOwGV1e1hDjGGjXbdArm8uJZtCH5MbcctVX8A1WpqumJHwckAAAAASUVORK5CYII=");
+  background-size: 28px 28px;
+  animation: image-loading-rotate 1s linear infinite !important;
+}
+
+.imt-image-status span {
+  color: var(--bg-2, #fff) !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  font-family: "PingFang SC", Arial, sans-serif !important;
+}
+
+@keyframes image-loading-rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+</style></head>
+<body class="font-sans bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-white transition-colors duration-500 overflow-x-hidden" data-aos-easing="ease" data-aos-duration="1000" data-aos-delay="0">
+    <!-- Loading Animation -->
+    <div class="loader-container loader-hidden" style="display: none;">
+        <div class="loader flex flex-col items-center">
+            <div class="mb-4">
+                <i class="fas fa-school text-primary-600 text-5xl animate-bounce-slow"></i>
+            </div>
+            <div class="text-primary-600 font-display font-bold text-xl">WPS 365 家校协同</div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center text-white transform rotate-12 shadow-lg">
+                    <i class="fas fa-school text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-display font-bold">WPS 365 <span class="text-primary-600 dark:text-primary-400">家校协同</span></h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#features" class="font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors highlight">核心功能</a>
+                <a href="#process" class="font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors highlight">账号流程</a>
+                <a href="#scenarios" class="font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors highlight">应用场景</a>
+                <a href="#analysis" class="font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors highlight">现状分析</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
+                <a href="#contact" class="btn-primary px-4 py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-primary-700 transform hover:scale-105 transition-all">
+                    联系我们
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-[0_-5px_15px_rgba(0,0,0,0.1)] z-50 px-4 py-3">
+        <div class="flex justify-around">
+            <a href="#features" class="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                <i class="fas fa-star-of-life mb-1"></i>
+                <span class="text-xs">核心功能</span>
+            </a>
+            <a href="#process" class="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                <i class="fas fa-user-cog mb-1"></i>
+                <span class="text-xs">账号流程</span>
+            </a>
+            <a href="#scenarios" class="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                <i class="far fa-lightbulb mb-1"></i>
+                <span class="text-xs">应用场景</span>
+            </a>
+            <a href="#analysis" class="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                <i class="fas fa-chart-pie mb-1"></i>
+                <span class="text-xs">现状分析</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[90vh] flex items-center overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-24 left-10 md:left-32 w-64 h-64 bg-primary-200 dark:bg-primary-800 opacity-60 rounded-full filter blur-3xl"></div>
+            <div class="absolute bottom-24 right-10 md:right-32 w-80 h-80 bg-secondary-200 dark:bg-secondary-800 opacity-60 rounded-full filter blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent-200 dark:bg-accent-800 opacity-40 rounded-full filter blur-3xl"></div>
+        </div>
+        
+        <!-- Circle Background Elements -->
+        <div class="absolute top-20 right-10 w-16 h-16 bg-secondary-400 rounded-full opacity-20 animate-pulse-slow"></div>
+        <div class="absolute bottom-32 left-8 w-12 h-12 bg-accent-400 rounded-full opacity-20 animate-pulse-slow" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/3 left-1/4 w-8 h-8 bg-primary-400 rounded-full opacity-20 animate-pulse-slow" style="animation-delay: 2s;"></div>
+        
+        <div class="container mx-auto px-6 py-24 z-10 relative">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div data-aos="fade-right" data-aos-duration="1000" class="aos-init aos-animate">
+                    <div class="flex space-x-2 items-center mb-6">
+                        <span class="px-3 py-1 bg-primary-50 dark:bg-primary-900/50 text-primary-600 dark:text-primary-300 rounded-full text-sm font-medium">WPS 365 专业方案</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight mb-6">
+                        家校协同<br><span class="text-transparent bg-clip-text gradient-primary bg-gradient-to-r from-primary-600 to-secondary-600">数字化</span>解决方案
+                    </h1>
+                    <p class="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-xl">
+                        将家庭的温度与学校的专业相结合，实现沟通无障碍、管理高效化、教育目标精准化
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#features" class="btn-primary px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-2xl font-bold shadow-lg hover:shadow-xl transform hover:translate-y-[-2px] transition-all">
+                            探索核心功能
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#scenarios" class="px-8 py-4 bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 border-2 border-primary-600 dark:border-primary-400 rounded-2xl font-bold shadow-md hover:shadow-lg transform hover:translate-y-[-2px] transition-all">
+                            应用场景示例
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Hero Illustration -->
+                <div class="relative hidden lg:block aos-init aos-animate" data-aos="fade-up" data-aos-duration="1200">
+                    <div class="absolute -top-20 -left-20 w-64 h-64 bg-primary-100 dark:bg-primary-800/30 rounded-full filter blur-3xl"></div>
+                    <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-secondary-100 dark:bg-secondary-800/30 rounded-full filter blur-3xl"></div>
+                    
+                    <div class="relative z-10 bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-700 transform rotate-3 floating">
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 gradient-primary rounded-2xl flex items-center justify-center text-white">
+                                    <i class="fas fa-calendar-alt text-lg"></i>
+                                </div>
+                                <h3 class="font-bold">班级日历</h3>
+                            </div>
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                                <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                                <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-7 gap-1 text-center mb-4">
+                            <div class="text-xs font-medium text-gray-500">一</div>
+                            <div class="text-xs font-medium text-gray-500">二</div>
+                            <div class="text-xs font-medium text-gray-500">三</div>
+                            <div class="text-xs font-medium text-gray-500">四</div>
+                            <div class="text-xs font-medium text-gray-500">五</div>
+                            <div class="text-xs font-medium text-gray-500">六</div>
+                            <div class="text-xs font-medium text-gray-500">日</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-7 gap-1 text-center">
+                            <div class="py-2 text-gray-400">26</div>
+                            <div class="py-2 text-gray-400">27</div>
+                            <div class="py-2 text-gray-400">28</div>
+                            <div class="py-2 text-gray-400">29</div>
+                            <div class="py-2 text-gray-400">30</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">1</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">2</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">3</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">4</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">5</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">6</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">7</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">8</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">9</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">10</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">11</div>
+                            <div class="py-2 bg-secondary-100 dark:bg-secondary-800 text-secondary-800 dark:text-secondary-200 rounded-lg">12</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">13</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">14</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">15</div>
+                            <div class="py-2 bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-200 rounded-lg">16</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">17</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">18</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">19</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">20</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">21</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">22</div>
+                            <div class="py-2 text-gray-600 dark:text-gray-300">23</div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <div class="mb-3 p-3 bg-primary-50 dark:bg-primary-900/40 rounded-lg">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex-shrink-0 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-xs">16</div>
+                                    <div class="ml-3">
+                                        <h4 class="text-sm font-bold text-primary-700 dark:text-primary-300">期中考试</h4>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400">上午 8:00 - 下午 3:30</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-3 bg-secondary-50 dark:bg-secondary-900/40 rounded-lg">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex-shrink-0 bg-secondary-500 rounded-full flex items-center justify-center text-white font-bold text-xs">12</div>
+                                    <div class="ml-3">
+                                        <h4 class="text-sm font-bold text-secondary-700 dark:text-secondary-300">家长会</h4>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400">晚上 7:00 - 8:30</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="absolute top-1/4 -right-12 z-20 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 transform -rotate-6 waving">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <div class="w-8 h-8 rounded-full bg-accent-500 flex items-center justify-center text-white">
+                                <i class="fas fa-bell text-sm"></i>
+                            </div>
+                            <span class="text-sm font-medium">新通知</span>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">语文作业已经提交，老师已批改完成！</p>
+                    </div>
+                    
+                    <div class="absolute -bottom-6 -left-6 z-20 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 transform rotate-12 waving" style="animation-delay: 2s;">
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-check-double text-green-500 mr-2"></i>
+                            <p class="text-sm font-medium">已确认参加周五班级活动</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">向下滚动探索</p>
+            <div class="w-6 h-10 border-2 border-gray-400 dark:border-gray-500 rounded-full flex justify-center">
+                <span class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce mt-2"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div data-aos="fade-up" data-aos-delay="0" class="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-lg aos-init aos-animate">
+                    <div class="text-4xl md:text-5xl font-display font-bold text-primary-600 dark:text-primary-400 mb-2">98%</div>
+                    <p class="text-gray-600 dark:text-gray-300 font-medium">家长满意度</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="100" class="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-lg aos-init aos-animate">
+                    <div class="text-4xl md:text-5xl font-display font-bold text-secondary-600 dark:text-secondary-400 mb-2">45%</div>
+                    <p class="text-gray-600 dark:text-gray-300 font-medium">沟通时间节省</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="200" class="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-lg aos-init aos-animate">
+                    <div class="text-4xl md:text-5xl font-display font-bold text-accent-600 dark:text-accent-400 mb-2">2000+</div>
+                    <p class="text-gray-600 dark:text-gray-300 font-medium">学校已采用</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300" class="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-lg aos-init aos-animate">
+                    <div class="text-4xl md:text-5xl font-display font-bold text-emerald-600 dark:text-emerald-400 mb-2">65%</div>
+                    <p class="text-gray-600 dark:text-gray-300 font-medium">家长参与率提升</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 relative overflow-hidden">
+        <!-- Decorative Elements -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary-100 dark:bg-primary-900/30 rounded-full filter blur-3xl -translate-y-1/2 translate-x-1/3 z-0"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-secondary-100 dark:bg-secondary-900/30 rounded-full filter blur-3xl translate-y-1/2 -translate-x-1/3 z-0"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 aos-init aos-animate" data-aos="fade-up">
+                <span class="px-4 py-2 bg-primary-50 dark:bg-primary-900/50 text-primary-600 dark:text-primary-300 rounded-full text-sm font-medium inline-block mb-4">强大且易用</span>
+                <h2 class="text-4xl font-display font-bold mb-6">核心产品能力</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    WPS 365的协同办公平台是家校协同的技术基石，通过强大的协作能力和多终端兼容性，让家长、学生和学校高效互动
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-xl aos-init aos-animate" data-aos="fade-up" data-aos-delay="0">
+                    <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center text-white mb-6 transform -rotate-6">
+                        <i class="fas fa-calendar-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold mb-4">金山日历</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">一站式整合课程表、考试安排和活动通知，实时掌握学习进程，通过提醒功能避免错过重要事项</p>
+                    <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <a href="#" class="inline-flex items-center text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+                            详细了解
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-xl aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center text-white mb-6 transform -rotate-6">
+                        <i class="fas fa-video text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold mb-4">金山会议</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">将家长会、老师反馈会等线上化，打破时间与空间的限制，让沟通更灵活、更高效</p>
+                    <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <a href="#" class="inline-flex items-center text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+                            详细了解
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-xl aos-init aos-animate" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center text-white mb-6 transform -rotate-6">
+                        <i class="fas fa-cloud text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold mb-4">云文档</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">家长和学校轻松共享学习资料、作业记录和行为报告，同时确保数据安全与可追溯性</p>
+                    <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <a href="#" class="inline-flex items-center text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+                            详细了解
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Feature 4 -->
+                <div class="feature-card p-8 bg-white dark:bg-gray-800 rounded-3xl shadow-xl aos-init aos-animate" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center text-white mb-6 transform -rotate-6">
+                        <i class="fas fa-users text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold mb-4">通讯录</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">清晰合理的账号分发流程，为家校协同的顺利推进打下坚实基础</p>
+                    <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <a href="#" class="inline-flex items-center text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+                            详细了解
+                            <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Account Setup Process -->
+    <section id="process" class="py-24 relative bg-gray-50 dark:bg-gray-900 overflow-hidden">
+        <!-- Background Decoration -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 right-0 opacity-10">
+                <svg width="500" height="500" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="50" fill="url(#gradient)"></circle>
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#0ea5e9"></stop>
+                            <stop offset="100%" stop-color="#8b5cf6"></stop>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <div class="absolute bottom-0 left-0 opacity-10">
+                <svg width="500" height="500" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="50" fill="url(#gradient2)"></circle>
+                    <defs>
+                        <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#8b5cf6"></stop>
+                            <stop offset="100%" stop-color="#ec4899"></stop>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 aos-init aos-animate" data-aos="fade-up">
+                <span class="px-4 py-2 bg-secondary-50 dark:bg-secondary-900/50 text-secondary-600 dark:text-secondary-300 rounded-full text-sm font-medium inline-block mb-4">简单四步走</span>
+                <h2 class="text-4xl font-display font-bold mb-6">账号基础设置流程</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    基于家长账号的创建与分发，保障家校协同顺利推进
+                </p>
+            </div>
+            
+            <!-- Process Steps -->
+            <div class="relative">
+                <!-- Connection Line -->
+                <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-primary-500 to-secondary-500 hidden md:block" style="transform: translateX(-50%);"></div>
+                
+                <!-- Step 1 -->
+                <div class="flex flex-col md:flex-row items-center mb-16 aos-init aos-animate" data-aos="fade-up">
+                    <div class="md:w-1/2 md:pr-12 mb-8 md:mb-0 flex md:justify-end">
+                        <div class="max-w-md bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl">
+                            <h3 class="text-2xl font-display font-bold mb-4 text-primary-600 dark:text-primary-400">家校班级群准备</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4">初始化家校沟通部门，创建班级并导入任课老师</p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-3 text-lg"></i>
+                                    <span>设置家校沟通团队，导入相关班级与教师</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-3 text-lg"></i>
+                                    <span>配置班主任为管理员和群主</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-3 text-lg"></i>
+                                    <span>将任课老师加入到家校沟通群中</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="relative md:w-24 flex flex-shrink-0 justify-center">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold text-xl z-10">1</div>
+                    </div>
+                    
+                    <div class="md:w-1/2 md:pl-12 mt-8 md:mt-0 md:hidden">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl">
+                            <!-- Mobile only content if needed -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="flex flex-col md:flex-row items-center mb-16 aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                    <div class="md:w-1/2 md:pr-12 mb-8 md:mb-0 md:order-2">
+                        <div class="max-w-md bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl ml-auto">
+                            <h3 class="text-2xl font-display font-bold mb-4 text-primary-600 dark:text-primary-400">账号分发与激活</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4">多渠道分发账号，确保家长顺利激活</p>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <h4 class="font-bold mb-2 text-secondary-600 dark:text-secondary-400">分发渠道</h4>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="fas fa-envelope text-gray-500 mt-1 mr-3"></i>
+                                            <span>短信/邮件通知</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fab fa-weixin text-gray-500 mt-1 mr-3"></i>
+                                            <span>微信入口引导</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-file-alt text-gray-500 mt-1 mr-3"></i>
+                                            <span>纸质备选方案</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold mb-2 text-secondary-600 dark:text-secondary-400">激活操作</h4>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="fas fa-mobile-alt text-gray-500 mt-1 mr-3"></i>
+                                            <span>微信账号登录平台</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-check-circle text-gray-500 mt-1 mr-3"></i>
+                                            <span>完成首次激活</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative md:w-24 flex flex-shrink-0 justify-center md:order-1">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-secondary-500 to-primary-500 flex items-center justify-center text-white font-bold text-xl z-10">2</div>
+                    </div>
+                    
+                    <div class="md:w-1/2 md:pl-12 mt-8 md:mt-0 md:order-0 md:hidden">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl">
+                            <!-- Mobile only content if needed -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="flex flex-col md:flex-row items-center mb-16 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200">
+                    <div class="md:w-1/2 md:pr-12 mb-8 md:mb-0 flex md:justify-end">
+                        <div class="max-w-md bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl">
+                            <h3 class="text-2xl font-display font-bold mb-4 text-primary-600 dark:text-primary-400">通讯录可见性设置</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4">保护隐私的同时确保必要沟通</p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-cog text-blue-500 mt-1 mr-3 text-lg"></i>
+                                    <span>进入通讯录设置页面</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-eye-slash text-blue-500 mt-1 mr-3 text-lg"></i>
+                                    <span>制定家校团队，设置合理的可见性</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-search-minus text-blue-500 mt-1 mr-3 text-lg"></i>
+                                    <span>去掉不必要的搜索权限</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="relative md:w-24 flex flex-shrink-0 justify-center">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-xl z-10">3</div>
+                    </div>
+                    
+                    <div class="md:w-1/2 md:pl-12 mt-8 md:mt-0 md:hidden">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl">
+                            <!-- Mobile only content if needed -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="flex flex-col md:flex-row items-center aos-init aos-animate" data-aos="fade-up" data-aos-delay="300">
+                    <div class="md:w-1/2 md:pr-12 mb-8 md:mb-0 md:order-2">
+                        <div class="max-w-md bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl ml-auto">
+                            <h3 class="text-2xl font-display font-bold mb-4 text-primary-600 dark:text-primary-400">绑定完成</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4">自动生成完整的班级协作平台</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-folder text-secondary-500 mt-1 mr-3"></i>
+                                    <span>班级的文件共享团队</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-comments text-secondary-500 mt-1 mr-3"></i>
+                                    <span>班级的聊天群组</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-users text-secondary-500 mt-1 mr-3"></i>
+                                    <span>班级圈</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-file-alt text-secondary-500 mt-1 mr-3"></i>
+                                    <span>协作模板资源</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-table text-secondary-500 mt-1 mr-3"></i>
+                                    <span>班级工作台</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-paint-brush text-secondary-500 mt-1 mr-3"></i>
+                                    <span>班级空间UI自定义</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative md:w-24 flex flex-shrink-0 justify-center md:order-1">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-r from-accent-500 to-secondary-500 flex items-center justify-center text-white font-bold text-xl z-10">4</div>
+                    </div>
+                    
+                    <div class="md:w-1/2 md:pl-12 mt-8 md:mt-0 md:order-0 md:hidden">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl">
+                            <!-- Mobile only content if needed -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Scenarios -->
+    <section id="scenarios" class="py-24 relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute right-0 top-20 w-64 h-64 bg-primary-100 dark:bg-primary-900/30 rounded-full filter blur-3xl"></div>
+        <div class="absolute left-0 bottom-20 w-64 h-64 bg-secondary-100 dark:bg-secondary-900/30 rounded-full filter blur-3xl"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 aos-init aos-animate" data-aos="fade-up">
+                <span class="px-4 py-2 bg-secondary-50 dark:bg-secondary-900/50 text-secondary-600 dark:text-secondary-300 rounded-full text-sm font-medium inline-block mb-4">应用示例</span>
+                <h2 class="text-4xl font-display font-bold mb-6">家校协同应用场景</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    WPS 365产品能力与家校协同场景的完美匹配
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Scenario 1 -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden group aos-init aos-animate" data-aos="fade-up" data-aos-delay="0">
+                    <div class="h-48 bg-gradient-to-r from-primary-500 to-primary-700 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-comments text-white text-6xl opacity-30"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8">
+                            <h3 class="text-white text-2xl font-display font-bold group-hover:translate-y-[-5px] transition-transform">家校沟通</h3>
+                        </div>
+                        <!-- Decorative patterns -->
+                        <div class="absolute top-4 right-4 w-16 h-16 border-4 border-white/20 rounded-full"></div>
+                        <div class="absolute bottom-10 right-20 w-6 h-6 bg-white/20 rounded-full"></div>
+                    </div>
+                    <div class="p-8">
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">提供UI定制的WOA客户端，作为家校沟通的协作工作台</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl gradient-primary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">通知公告</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">发布学校活动、重要通知</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl gradient-primary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-comment-dots"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">教师留言板</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">提交问题并收到反馈</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl gradient-primary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">即时通讯</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">家校群功能</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <a href="#" class="inline-flex items-center text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
+                                查看更多功能
+                                <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Scenario 2 -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden group aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                    <div class="h-48 bg-gradient-to-r from-secondary-500 to-secondary-700 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-book-open text-white text-6xl opacity-30"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8">
+                            <h3 class="text-white text-2xl font-display font-bold group-hover:translate-y-[-5px] transition-transform">课业管理</h3>
+                        </div>
+                        <!-- Decorative patterns -->
+                        <div class="absolute top-4 right-4 w-16 h-16 border-4 border-white/20 rounded-full"></div>
+                        <div class="absolute bottom-10 right-20 w-6 h-6 bg-white/20 rounded-full"></div>
+                    </div>
+                    <div class="p-8">
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">全面管理学生学习进度和课业任务</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl gradient-secondary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">金山日历</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">详细课程安排与大纲</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl gradient-secondary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">作业中心</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">显示待完成作业与提交状态</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl gradient-secondary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">成绩反馈</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">学科成绩分布与历史查询</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <a href="#" class="inline-flex items-center text-secondary-600 dark:text-secondary-400 font-medium hover:text-secondary-700 dark:hover:text-secondary-300 transition-colors">
+                                查看更多功能
+                                <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Scenario 3 -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden group aos-init aos-animate" data-aos="fade-up" data-aos-delay="200">
+                    <div class="h-48 bg-gradient-to-r from-accent-500 to-accent-700 relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-star text-white text-6xl opacity-30"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full p-8">
+                            <h3 class="text-white text-2xl font-display font-bold group-hover:translate-y-[-5px] transition-transform">德育评价</h3>
+                        </div>
+                        <!-- Decorative patterns -->
+                        <div class="absolute top-4 right-4 w-16 h-16 border-4 border-white/20 rounded-full"></div>
+                        <div class="absolute bottom-10 right-20 w-6 h-6 bg-white/20 rounded-full"></div>
+                    </div>
+                    <div class="p-8">
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">全面记录和评价学生德育表现</p>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-accent-500 to-secondary-500 flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">周期活动管理</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">习惯养成打卡</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-accent-500 to-secondary-500 flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">行为表现</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">课堂参与度、纪律等</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-accent-500 to-secondary-500 flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="font-bold mb-1">德育积分</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">记录好人好事与校内奖励</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="mt-8 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <a href="#" class="inline-flex items-center text-accent-600 dark:text-accent-400 font-medium hover:text-accent-700 dark:hover:text-accent-300 transition-colors">
+                                查看更多功能
+                                <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- More Scenarios Button -->
+                <div class="lg:col-span-3 text-center mt-8 aos-init aos-animate" data-aos="fade-up" data-aos-delay="300">
+                    <a href="#" class="inline-block px-8 py-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded-full font-bold shadow-md hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700 transform hover:scale-105 transition-all">
+                        查看全部 6 个应用场景
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Current Status Section -->
+    <section id="analysis" class="py-24 bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+        <!-- Decorative Elements -->
+        <div class="absolute top-0 right-0 w-1/3 h-1/3 bg-gradient-to-br from-primary-200 to-secondary-200 dark:from-primary-800/20 dark:to-secondary-800/20 rounded-bl-full opacity-30 z-0"></div>
+        <div class="absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-to-tr from-secondary-200 to-accent-200 dark:from-secondary-800/20 dark:to-accent-800/20 rounded-tr-full opacity-30 z-0"></div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 aos-init aos-animate" data-aos="fade-up">
+                <span class="px-4 py-2 bg-accent-50 dark:bg-accent-900/50 text-accent-600 dark:text-accent-300 rounded-full text-sm font-medium inline-block mb-4">现状分析</span>
+                <h2 class="text-4xl font-display font-bold mb-6">当前家校沟通痛点</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    小学二年级家长视角：当前家校沟通渠道完全靠教师自行设计，缺乏统一规划
+                </p>
+            </div>
+            
+            <!-- Current Challenges -->
+            <div class="grid md:grid-cols-2 gap-10">
+                <!-- Communication Channels -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden aos-init aos-animate" data-aos="fade-up" data-aos-delay="0">
+                    <div class="h-20 flex items-center justify-between px-8 bg-gradient-to-r from-primary-600 to-secondary-600">
+                        <h3 class="text-2xl font-display font-bold text-white">沟通渠道现状</h3>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white/20">
+                            <i class="fas fa-comments text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 rounded-lg overflow-hidden">
+                                <thead class="bg-gray-100 dark:bg-gray-800">
+                                    <tr>
+                                        <th class="px-4 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase">群功能</th>
+                                        <th class="px-4 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase">群作用</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <td class="px-4 py-3 whitespace-nowrap font-medium text-primary-600 dark:text-primary-400">通知群</td>
+                                        <td class="px-4 py-3">包括所有老师及家长，发布学校的重要通知，另外包含学生的德育、成绩、活动等信息。一般作为公告信息的渠道，不会进行交流沟通。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <td class="px-4 py-3 whitespace-nowrap font-medium text-primary-600 dark:text-primary-400">沟通群</td>
+                                        <td class="px-4 py-3">教师与家长沟通的主要渠道，包括活动的照片分享，任务接龙等。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <td class="px-4 py-3 whitespace-nowrap font-medium text-primary-600 dark:text-primary-400">家委群</td>
+                                        <td class="px-4 py-3">包括班主任与家委会成员，沟通需要家长配合学校的相关任务，比如跳蚤市场、乐考、运动会、新年联欢等活动组织。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <td class="px-4 py-3 whitespace-nowrap font-medium text-primary-600 dark:text-primary-400">家长群</td>
+                                        <td class="px-4 py-3">包括所有的家长，一般分享一些学校内的午餐，缴费等信息，也是家长向学习提意见的主要渠道。</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                        <td class="px-4 py-3 whitespace-nowrap font-medium text-primary-600 dark:text-primary-400">家校沟通群</td>
+                                        <td class="px-4 py-3">基于学习的一个专项信息，拉通相关校领导，家委组成的沟通渠道。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Communication Tools -->
+                <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                    <div class="h-20 flex items-center justify-between px-8 bg-gradient-to-r from-secondary-600 to-accent-600">
+                        <h3 class="text-2xl font-display font-bold text-white">信息交流工具现状</h3>
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white/20">
+                            <i class="fas fa-tools text-white text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-2xl">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-r from-primary-500 to-secondary-500 text-white">
+                                        <i class="fas fa-list-ol"></i>
+                                    </div>
+                                    <h4 class="text-lg font-bold ml-3">接龙类</h4>
+                                </div>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                        <span>使用<span class="font-medium">微信接龙</span>：完成学校通知到位的要求，重要通知的签收确认</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                        <span>使用<span class="font-medium">表单</span>：主要完成缴费等重要任务的通知</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-2xl">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-r from-accent-500 to-primary-500 text-white">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <h4 class="text-lg font-bold ml-3">打卡类</h4>
+                                </div>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                        <span>使用<span class="font-medium">班级小管家</span>：周期性任务，如阅读打卡、健康晨检</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-2xl">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-r from-secondary-500 to-accent-500 text-white">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </div>
+                                    <h4 class="text-lg font-bold ml-3">通知、公告</h4>
+                                </div>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                        <span>学校重要信息传递通常在微信群中，渠道分散混乱</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-2xl">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-r from-primary-500 to-accent-500 text-white">
+                                        <i class="fas fa-images"></i>
+                                    </div>
+                                    <h4 class="text-lg font-bold ml-3">照片分享</h4>
+                                </div>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                        <span>学生活动、校园生活照片在微信群中进行分享，比较散乱</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Solution CTA -->
+                        <div class="mt-8 text-center">
+                            <a href="#" class="inline-block px-6 py-3 bg-gradient-to-r from-secondary-600 to-accent-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:translate-y-[-2px] transition-all">
+                                了解我们的一体化解决方案
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary-600/10 to-secondary-600/10 dark:from-primary-900/30 dark:to-secondary-900/30 z-0"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16 aos-init aos-animate" data-aos="fade-up">
+                <span class="px-4 py-2 bg-primary-50 dark:bg-primary-900/50 text-primary-600 dark:text-primary-300 rounded-full text-sm font-medium inline-block mb-4">用户心声</span>
+                <h2 class="text-4xl font-display font-bold mb-6">他们如何评价我们</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    来自教师、家长和学校管理者的真实反馈
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl relative aos-init aos-animate" data-aos="fade-up" data-aos-delay="0">
+                    <div class="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+                        <div class="w-16 h-16 text-primary-100 dark:text-primary-900">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.9999 2C6.47691 2 2.00085 6.47606 2.00085 12.0001C2.00085 17.5192 6.4718 22 11.9999 22C17.528 22 21.999 17.5241 21.999 12.0001C21.999 6.47606 17.5229 2 11.9999 2ZM11.9999 20.4C7.30681 20.4 3.59656 16.6935 3.59656 12.0001C3.59656 7.30681 7.30311 3.6 11.9999 3.6C16.6932 3.6 20.4043 7.30651 20.4043 12.0001C20.4043 16.6935 16.698 20.4 11.9999 20.4ZM16.3425 8.748C16.0358 8.4411 15.5342 8.4411 15.2274 8.748L11.9999 11.9754L8.77245 8.748C8.4656 8.4411 7.964 8.4411 7.65736 8.748C7.35051 9.05515 7.35051 9.55645 7.65736 9.8636L11.4424 13.6486C11.5889 13.7951 11.7944 13.8682 11.9999 13.8682C12.2054 13.8682 12.411 13.7951 12.5575 13.6486L16.3425 9.8636C16.6493 9.55645 16.6493 9.05515 16.3425 8.748Z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-1 text-yellow-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6 italic">"WPS 365家校协同方案彻底改变了我与学生家长沟通的方式。从繁杂的微信群到统一的平台，效率提高了不止一倍，最重要的是家长们的参与度明显提升。"</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-800 flex items-center justify-center text-primary-800 dark:text-primary-200 font-bold mr-4">LJ</div>
+                        <div>
+                            <h4 class="font-bold">李婧</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">小学二年级班主任</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 2 -->
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl relative aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                    <div class="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+                        <div class="w-16 h-16 text-secondary-100 dark:text-secondary-900">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.9999 2C6.47691 2 2.00085 6.47606 2.00085 12.0001C2.00085 17.5192 6.4718 22 11.9999 22C17.528 22 21.999 17.5241 21.999 12.0001C21.999 6.47606 17.5229 2 11.9999 2ZM11.9999 20.4C7.30681 20.4 3.59656 16.6935 3.59656 12.0001C3.59656 7.30681 7.30311 3.6 11.9999 3.6C16.6932 3.6 20.4043 7.30651 20.4043 12.0001C20.4043 16.6935 16.698 20.4 11.9999 20.4ZM16.3425 8.748C16.0358 8.4411 15.5342 8.4411 15.2274 8.748L11.9999 11.9754L8.77245 8.748C8.4656 8.4411 7.964 8.4411 7.65736 8.748C7.35051 9.05515 7.35051 9.55645 7.65736 9.8636L11.4424 13.6486C11.5889 13.7951 11.7944 13.8682 11.9999 13.8682C12.2054 13.8682 12.411 13.7951 12.5575 13.6486L16.3425 9.8636C16.6493 9.55645 16.6493 9.05515 16.3425 8.748Z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-1 text-yellow-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6 italic">"作为三个孩子的妈妈，跟上每个孩子的学习进度一直是挑战。自从学校采用了WPS 365，我可以在一个平台上查看所有的作业、活动和评价，真的省心不少。"</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-secondary-100 dark:bg-secondary-800 flex items-center justify-center text-secondary-800 dark:text-secondary-200 font-bold mr-4">WX</div>
+                        <div>
+                            <h4 class="font-bold">王小红</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">小学生家长</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Testimonial 3 -->
+                <div class="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl relative aos-init aos-animate" data-aos="fade-up" data-aos-delay="200">
+                    <div class="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+                        <div class="w-16 h-16 text-accent-100 dark:text-accent-900">
+                            <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.9999 2C6.47691 2 2.00085 6.47606 2.00085 12.0001C2.00085 17.5192 6.4718 22 11.9999 22C17.528 22 21.999 17.5241 21.999 12.0001C21.999 6.47606 17.5229 2 11.9999 2ZM11.9999 20.4C7.30681 20.4 3.59656 16.6935 3.59656 12.0001C3.59656 7.30681 7.30311 3.6 11.9999 3.6C16.6932 3.6 20.4043 7.30651 20.4043 12.0001C20.4043 16.6935 16.698 20.4 11.9999 20.4ZM16.3425 8.748C16.0358 8.4411 15.5342 8.4411 15.2274 8.748L11.9999 11.9754L8.77245 8.748C8.4656 8.4411 7.964 8.4411 7.65736 8.748C7.35051 9.05515 7.35051 9.55645 7.65736 9.8636L11.4424 13.6486C11.5889 13.7951 11.7944 13.8682 11.9999 13.8682C12.2054 13.8682 12.411 13.7951 12.5575 13.6486L16.3425 9.8636C16.6493 9.55645 16.6493 9.05515 16.3425 8.748Z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-1 text-yellow-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6 italic">"身为学校信息化负责人，引入WPS 365是我做过的最正确的决定。整个系统帮我们解决了数据孤岛问题，教师满意度提升了，家长也反映良好。"</p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full bg-accent-100 dark:bg-accent-800 flex items-center justify-center text-accent-800 dark:text-accent-200 font-bold mr-4">ZL</div>
+                        <div>
+                            <h4 class="font-bold">张磊</h4>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">学校信息化主管</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-24 relative overflow-hidden">
+        <!-- Background Elements -->
+        <div class="absolute inset-0">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary-600 to-secondary-600 dark:from-primary-800 dark:to-secondary-800 opacity-90 z-0"></div>
+            <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-accent-500 rounded-full opacity-20 filter blur-3xl z-0"></div>
+            <div class="absolute -left-24 -top-24 w-96 h-96 bg-primary-300 rounded-full opacity-20 filter blur-3xl z-0"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="max-w-4xl mx-auto text-center text-white">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-6 aos-init aos-animate" data-aos="fade-up">开启全新的家校协同体验</h2>
+                <p class="text-xl text-white/80 mb-10 aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                    让WPS 365为您的学校构建一个高效、透明且温暖的家校沟通桥梁
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200">
+                    <a href="#contact" class="px-10 py-4 bg-white text-primary-600 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+                        立即咨询
+                    </a>
+                    <a href="#" class="px-10 py-4 bg-primary-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+                        预约演示
+                    </a>
+                </div>
+                
+                <!-- Brands/Schools -->
+                <div class="mt-20 aos-init aos-animate" data-aos="fade-up" data-aos-delay="300">
+                    <p class="text-white/60 mb-8 text-sm uppercase tracking-wider">已有超过2000所学校信任我们</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="flex items-center justify-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                            <span class="text-lg font-medium text-white">胜利路小学</span>
+                        </div>
+                        <div class="flex items-center justify-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                            <span class="text-lg font-medium text-white">民族实验学校</span>
+                        </div>
+                        <div class="flex items-center justify-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                            <span class="text-lg font-medium text-white">未来星学校</span>
+                        </div>
+                        <div class="flex items-center justify-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+                            <span class="text-lg font-medium text-white">朝阳区实验中学</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white relative overflow-hidden">
+        <!-- Decorative Elements -->
+        <div class="absolute inset-0 opacity-10 z-0">
+            <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-primary-500 to-transparent"></div>
+            <div class="absolute -bottom-20 -right-20 w-64 h-64 
+
+ERROR: Error in streaming API call: 
+
+
+
+[Response incomplete. Requesting continuation...]
+
+html
+            <div class=" absolute="" -bottom-20="" -right-20="" w-64="" h-64="" bg-gradient-to-r="" from-primary-500="" to-secondary-500="" rounded-full="" opacity-20="" filter="" blur-3xl"=""></div>
+            <div class="absolute -bottom-10 -left-20 w-48 h-48 bg-gradient-to-r from-secondary-500 to-accent-500 rounded-full opacity-20 filter blur-3xl"></div>
+        </div>
+        
+        <div class="container mx-auto px-6 py-20 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <!-- Logo and Description -->
+                <div class="col-span-1 md:col-span-4 lg:col-span-1">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center text-white transform rotate-12 shadow-lg">
+                            <i class="fas fa-school text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-display font-bold">WPS 365 <span class="text-primary-400">家校协同</span></h2>
+                    </div>
+                    <p class="text-gray-400 mb-8 max-w-xs">将家庭的温度与学校的专业相结合，实现沟通无障碍、管理高效化、教育目标精准化</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white hover:bg-primary-600 transition-colors">
+                            <i class="fab fa-weixin"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white hover:bg-primary-600 transition-colors">
+                            <i class="fab fa-weibo"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-white hover:bg-primary-600 transition-colors">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6 text-white">产品能力</h3>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-primary-500"></i>金山日历
+                        </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-primary-500"></i>WebOffice
+                        </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-primary-500"></i>多维表
+                        </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-primary-500"></i>WOA
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <!-- Application Scenarios -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6 text-white">应用场景</h3>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-secondary-500"></i>家校沟通
+                        </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-secondary-500"></i>课业管理
+                        </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-secondary-500"></i>德育评价
+                        </a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary-400 transition-colors flex items-center">
+                            <i class="fas fa-chevron-right text-xs mr-2 text-secondary-500"></i>健康与安全
+                        </a></li>
+                    </ul>
+                </div>
+                
+                <!-- Contact Information -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6 text-white">联系我们</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center text-gray-400">
+                            <i class="fas fa-map-marker-alt text-accent-500 mr-3"></i>
+                            <span>北京市海淀区中关村软件园</span>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="fas fa-phone text-accent-500 mr-3"></i>
+                            <span>400-888-9999</span>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="fas fa-envelope text-accent-500 mr-3"></i>
+                            <span>contact@wps365.com</span>
+                        </li>
+                        <li class="flex items-center text-gray-400">
+                            <i class="far fa-clock text-accent-500 mr-3"></i>
+                            <span>周一至周五 9:00 - 18:00</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Divider -->
+            <div class="border-t border-gray-800 my-12"></div>
+            
+            <!-- Copyright -->
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 mb-4 md:mb-0">© 2023 WPS 365家校协同场景解决方案 - 为中小学提供高效的家校沟通平台</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors">隐私政策</a>
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors">使用条款</a>
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors">Cookie政策</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 z-50 opacity-0 invisible">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- AOS Animation Library -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    
+    <!-- JavaScript -->
+    <script>
+        // Initialize AOS
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 1000,
+                once: true,
+                offset: 100
+            });
+        });
+        
+        // Loading Animation
+        window.addEventListener('load', function() {
+            const loaderContainer = document.querySelector('.loader-container');
+            setTimeout(() => {
+                loaderContainer.classList.add('loader-hidden');
+            }, 1000);
+            
+            loaderContainer.addEventListener('transitionend', function() {
+                if (loaderContainer.classList.contains('loader-hidden')) {
+                    loaderContainer.style.display = 'none';
+                }
+            });
+        });
+        
+        // Dark mode toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // Check for saved user preference or use system preference
+        const savedTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // Apply the saved theme
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+        
+        // Toggle theme on button click
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const theme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+        });
+        
+        // Back to top button
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Add header shadow on scroll
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-lg');
+            } else {
+                header.classList.remove('shadow-lg');
+            }
+        });
+    </script>
+
+</body></html>
