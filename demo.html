@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新东方 & 宝洁 AI 项目落地经验分享</title>
+    <meta name="description" content="新东方与宝洁AI项目落地经验总结与可视化展示">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            },
+            darkMode: 'class',
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        .prose :where(img):not(:where([class~="not-prose"] *)) {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 font-sans antialiased transition-colors duration-300">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-primary-600 dark:text-primary-400">
+                    <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-xl font-semibold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">AI项目落地经验</span>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#overview" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors">项目概览</a>
+                <a href="#process" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors">落地过程</a>
+                <a href="#experience" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors">经验总结</a>
+                <a href="#team" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors">项目团队</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+                <button class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" id="mobile-menu-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-3">
+                <a href="#overview" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">项目概览</a>
+                <a href="#process" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">落地过程</a>
+                <a href="#experience" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">经验总结</a>
+                <a href="#team" class="text-sm font-medium hover:text-primary-600 dark:hover:text-primary-400 transition-colors py-2">项目团队</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-gray-800 dark:to-gray-900 py-20">
+        <div class="absolute inset-0 opacity-10 dark:opacity-5">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMxMTExMTEiIGZpbGwtb3BhY2l0eT0iMC4yIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIgMS44LTQgNC00czQgMS44IDQgNC0xLjggNC00IDQtNC0xLjgtNC00eiIvPjwvZz48L2c+PC9zdmc+')]"></div>
+        </div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">新东方 & 宝洁 AI 项目落地经验分享</h1>
+                <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8">从需求沟通、效果测试到上线投产的全流程经验总结</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#overview" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg">探索项目</a>
+                    <a href="#experience" class="px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg">经验总结</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <!-- Overview Section -->
+        <section id="overview" class="mb-20 scroll-mt-20">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold mb-4">项目概览</h2>
+                <p class="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">新东方与宝洁AI项目的核心差异与共同点</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-primary-600 dark:text-primary-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold">新东方项目</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <p class="text-gray-600 dark:text-gray-300">大型互联网教育平台，通过AI提升留学咨询业务效率，解决文档量大、格式复杂、更新频繁的问题。</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">行业</p>
+                                    <p class="font-medium">教育</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">AI产品</p>
+                                    <p class="font-medium">AI Docs</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">落地模式</p>
+                                    <p class="font-medium">问答API</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">网络类型</p>
+                                    <p class="font-medium">公网</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">项目周期: 2024.6 - 2025.3</span>
+                            <span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs font-medium rounded-full">已上线</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-secondary-600 dark:text-secondary-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold">宝洁项目</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <p class="text-gray-600 dark:text-gray-300">快消行业头部企业，私有化AI问答落地，提升HR和Sales部门的内部效能，满足Global合规要求。</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">行业</p>
+                                    <p class="font-medium">快消</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">AI产品</p>
+                                    <p class="font-medium">AI Docs</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">落地模式</p>
+                                    <p class="font-medium">私有化API</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">网络类型</p>
+                                    <p class="font-medium">私网</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">项目周期: 2024.4 - 2025.5</span>
+                            <span class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-xs font-medium rounded-full">进行中</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-4">项目切入点</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">共同背景</h4>
+                            <p class="text-gray-600 dark:text-gray-300">在AI落地内部场景的探索过程中遇到卡点，特别体现在文档处理方面，导致AI效果不符合预期。由于商务关系，客户了解WPS的文档解析策略较好，认为在RAG上有进一步深度合作的可能性。</p>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">新东方</h4>
+                                <p class="text-gray-600 dark:text-gray-300">WPS365的售后客户，通过AI问答提升留学咨询业务效能，解决800位业务老师查询资料和人工回复学生的压力。</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">宝洁</h4>
+                                <p class="text-gray-600 dark:text-gray-300">真人营销客户，通过私有化AI问答提升HR和Sales部门的内部效能，后续扩展到供应链场景，满足Global合规要求。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Success Factors -->
+        <section class="mb-20">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-4">项目致胜点</h3>
+                    <div class="space-y-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                                    <span class="text-primary-600 dark:text-primary-400 font-semibold">1</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2">行业领先的解析能力</h4>
+                                <p class="text-gray-600 dark:text-gray-300">测试过程中WPS的整体问答效果明显领先于客户自研的RAG系统，客户形成了"文档相关的需求，找WPS"的强认知。</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                                    <span class="text-primary-600 dark:text-primary-400 font-semibold">2</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2">深度共创模式</h4>
+                                <p class="text-gray-600 dark:text-gray-300">前期给客户展示了内部RAG问答落地的最佳实践，客户能直接"抄作业"。对于项目落地节奏的制定，以及项目推进过程中的重要参与、如何参与，提供了相应的咨询服务。</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-shrink-0 mr-4">
+                                <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                                    <span class="text-primary-600 dark:text-primary-400 font-semibold">3</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2">核心产研投入支持力度大</h4>
+                                <p class="text-gray-600 dark:text-gray-300">搭建了紧密的客户反馈-产研转圈-效果优化-客户验证效果的闭环，问答效果持续提升。客户直观体验到效果从原有的70分做到85-90分，甚至达到95分，达到上线投产标准。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process Section -->
+        <section id="process" class="mb-20 scroll-mt-20">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold mb-4">落地过程</h2>
+                <p class="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">从需求沟通到上线投产的全流程</p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 mb-12">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-6">新东方项目时间线</h3>
+                    <div class="relative">
+                        <!-- Timeline bar -->
+                        <div class="absolute left-4 top-0 bottom-0 w-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                        
+                        <!-- Timeline items -->
+                        <div class="space-y-8">
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">需求沟通 & 效果测试</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2024年7月-8月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">WPS测试客户提供的数据的筛选结果，收集和整理业务需求，搭建初步知识库。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">效率优化</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2024年9月-11月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">客户用"集团IT人力接入到我们的4项服务公司"的策略和目标，WPS用户体验及客户反馈的预测报告可有效解决。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">API对接开发平台</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2024年12月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">正式完成API接入，IT测试过程接口性能，启动API模式更新。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">上线投产</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2025年3月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">业务机构在IT上必须通过移动智能交互来，启动入库新房系统问题，已优化。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-6">宝洁项目时间线</h3>
+                    <div class="relative">
+                        <!-- Timeline bar -->
+                        <div class="absolute left-4 top-0 bottom-0 w-1 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                        
+                        <!-- Timeline items -->
+                        <div class="space-y-8">
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-secondary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">售前交流</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2024年4月-5月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">公园引入园地（产品总价值指数，销售总价值指数），AI Doc3的效率可远程控制和评估。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-secondary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">供应商资质审核</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2024年9月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">供应商资质评估通过，内部厂家反馈销售多学科的商务顾问与服务团队合作，技术方案的检测策略。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-secondary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">POC 签单</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2024年12月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">1215 POC 阶段逻辑，完成POC，争取达成正式合作。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative pl-12">
+                                <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-secondary-600 border-4 border-white dark:border-gray-800 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <h4 class="font-medium mb-1">正式上线（预计）</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">2025年5月</p>
+                                    <p class="text-gray-600 dark:text-gray-300">生产环境评估，全面使用推广。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="mb-20 scroll-mt-20">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold mb-4">经验总结</h2>
+                <p class="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">从两个项目中提炼的关键经验与最佳实践</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4">效果是关键</h3>
+                        <div class="space-y-4">
+                            <p class="text-gray-600 dark:text-gray-300">【问答效果达到客户预期】是从POC走到投产的关键里程碑。新东方决定接入RAG问答是因为解析+召回模块效果更优；宝洁决定签单也是因为RAG问答效果好。</p>
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">效果测试方法</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                                    <li>客户侧准备完整数据集（文件样张+测试用例集）</li>
+                                    <li>界定问答依赖的知识源，评估文件类型、大小和格式特点</li>
+                                    <li>框定问答场景范围，界定量化指标</li>
+                                    <li>WPS侧定期监测和巡检问答效果</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-4">客户协作模式</h3>
+                        <div class="space-y-4">
+                            <p class="text-gray-600 dark:text-gray-300">与客户IT保持积极沟通，双方利益一致：IT搞定业务和内部流程，我们搞定问答效果，共同制定目标和推进计划。</p>
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">客户角色与职责</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                                    <li>流程管理+IT负责人共同制定业务目标</li>
+                                    <li>业务owner参与服务、训练和后期运营</li>
+                                    <li>项目关键节点需通过流程管理+IT负责人确认</li>
+                                    <li>为WPS提供参考指标</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-4">遇到的问题与解决方案</h3>
+                    <div class="space-y-6">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-red-600 dark:text-red-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2">问题1: 人工评估效率很低，耗费时间长</h4>
+                                <p class="text-gray-600 dark:text-gray-300">在其他项目推动过程中，产品也遇到由于客户无法提供测试集，或认为我们的回答效果存在（针对性优化）而导致项目无法继续推动的情况。</p>
+                                <p class="mt-2 text-sm bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"><span class="font-medium text-primary-600 dark:text-primary-400">解决方案:</span> 目前有搭建自动化效果评估的工具，效果已验证，暂未上线。使用大模型作为裁判，来评估case。分析case，能提供更高效的评估结果，也更节省评估时间。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-yellow-600 dark:text-yellow-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2">问题2: 行业黑话/未碰硬问，回答效果不好</h4>
+                                <p class="text-gray-600 dark:text-gray-300">基于企业增强的BAG优化，解决行业未能化解可导致的无因无故答问题。</p>
+                                <p class="mt-2 text-sm bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"><span class="font-medium text-primary-600 dark:text-primary-400">解决方案:</span> 企业增强需求，预置行业词库，实现口语化提问无缝改写。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-purple-600 dark:text-purple-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2">问题3: 企业整体现状/知识结构，回答效果不好</h4>
+                                <p class="text-gray-600 dark:text-gray-300">标准产品方面方案暂无，难以优化，或依赖强化检测。</p>
+                                <p class="mt-2 text-sm bg-gray-50 dark:bg-gray-700 p-3 rounded-lg"><span class="font-medium text-primary-600 dark:text-primary-400">解决方案:</span> 表格解析效果持续迭代，表格任务专属Agent问答逻辑，对复杂表格表现良好。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section id="team" class="mb-20 scroll-mt-20">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold mb-4">项目团队</h2>
+                <p class="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">推动项目成功落地的关键角色</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-6">新东方项目团队</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">Owner</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@朱雨琴</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">项目负责人</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@游雅霞 @丁利杰</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">产品/机制</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@游雅霞 @贾磊 @黄祖莹</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">研发</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@施龙飞 @凯达一 @胡晓勤 @周宇超 @邓富华 @王国全</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">项目经理</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@曹佳佳</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">交付/技术支持</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@顾玥男</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-6">宝洁项目团队</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">Owner</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@朱雨琴</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">项目负责人</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@丁利杰</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">产品/机制</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@丁利杰 @游雅霞 @贾磊 @黄祖莹</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">研发</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@陈亮 @凯达一 @王国全</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">项目经理</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@廖伟荣</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">交付/技术支持</h4>
+                                <p class="text-gray-600 dark:text-gray-300">@郭建森 @吴里让</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Application Scenarios -->
+        <section class="mb-20">
+            <div class="mb-12 text-center">
+                <h2 class="text-3xl font-bold mb-4">典型应用场景</h2>
+                <p class="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">AI问答系统在不同业务场景中的实际应用</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-primary-600 dark:text-primary-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold">新东方: 企业私域知识问答助手</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <p class="text-gray-600 dark:text-gray-300">提升业务老师对客咨询效率，解决800位业务老师查询资料和人工回复学生的压力。</p>
+                            
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">场景特点</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                                    <li>文档量巨大，更新场景频繁</li>
+                                    <li>存量文档有2000个，总字数达到3000w以上</li>
+                                    <li>研报主要为第三方网站披露的中英文行研报告</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">解决方案</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                                    <li>AI Docs的问答API接入新东方Xchat页面</li>
+                                    <li>智能问答召回接口，结合新东方GPT4o输出答案</li>
+                                    <li>免登录免授权方案，一线业务老师可直接调用问答</li>
+                                    <li>表格解析效果持续迭代，对复杂表格表现良好</li>
+                                    <li>预置行业词库，实现口语化提问无缝改写</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-lg bg-secondary-100 dark:bg-secondary-900/30 flex items-center justify-center mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-secondary-600 dark:text-secondary-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-semibold">宝洁: 企业规章制度智能问答</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <p class="text-gray-600 dark:text-gray-300">提升员工满意度，作为员工服务的一部分，提升HR和Sales部门的内部效能。</p>
+                            
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">重点部门</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                                    <li>宝洁HR部门</li>
+                                    <li>Sales部门</li>
+                                    <li>后续扩展到供应链场景</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium mb-2 text-primary-600 dark:text-primary-400">解决方案</h4>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-300">
+                                    <li>一期: 完成POC，提供完整技术方案，搭建私有化环境</li>
+                                    <li>二期: 预设户环境评估，部分中间件运营，账号同步，AI开放接口提供</li>
+                                    <li>三期: 生产环境评估，全面使用推广</li>
+                                    <li>RAG质量完全低廉化，接入GPT系列模型</li>
+                                    <li>RAG API开放，宝洁作为中台能力后端自己开发应用</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <div class="container mx-auto px-4 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-primary-600 dark:text-primary-400">
+                            <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 01.359.852L12.982 9.75h7.268a.75.75 0 01.548 1.262l-10.5 11.25a.75.75 0 01-1.272-.71l1.992-7.302H3.75a.75.75 0 01-.548-1.262l10.5-11.25a.75.75 0 01.913-.143z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-xl font-semibold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">AI项目落地经验</span>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">从需求沟通、效果测试到上线投产的全流程经验总结</p>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex space-x-4 mb-4">
+                        <a href="https://twitter.com/" class="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">© 2023 AI项目落地经验分享. 保留所有权利.</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">作者: [WPS AI团队]</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-all opacity-0 invisible">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+        </svg>
+    </button>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            themeToggleLightIcon.classList.remove('hidden');
+            document.documentElement.classList.add('dark');
+        } else {
+            themeToggleDarkIcon.classList.remove('hidden');
+            document.documentElement.classList.remove('dark');
+        }
+
+        themeToggle.addEventListener('click', function() {
+            themeToggleDarkIcon.classList.toggle('hidden');
+            themeToggleLightIcon.classList.toggle('hidden');
+
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Back to top button
+        const backToTopButton = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+
+        backToTopButton.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Add animation to elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.scroll-animate');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementPosition < windowHeight - 100) {
+                    element.classList.add('animate-fade-in');
+                }
+            });
+        };
+
+        // Run once on page load
+        animateOnScroll();
+        
+        // Run on scroll
+        window.addEventListener('scroll', animateOnScroll);
+    </script>
+</body>
+</html>
