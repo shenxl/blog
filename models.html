@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WPS AI 模型管理系统</title>
+    <meta name="description" content="WPS AI 模型管理可视化界面">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['Menlo', 'Monaco', 'Consolas', 'monospace']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Preline UI -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@preline/overlay@1.0.0/index.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@preline/overlay@1.0.0/index.min.js"></script>
+    
+    <style>
+        [x-cloak] { display: none !important; }
+        .prose :where(code):not(:where([class~="not-prose"] *)) {
+            background-color: rgba(97, 97, 97, 0.1);
+            border-radius: 0.25rem;
+            padding: 0.2em 0.4em;
+            font-size: 0.9em;
+        }
+        .dark .prose :where(code):not(:where([class~="not-prose"] *)) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .card-hover {
+            transition: all 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .dark .card-hover:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .btn-hover {
+            transition: all 0.2s ease;
+        }
+        .btn-hover:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-sans antialiased min-h-screen transition-colors duration-300">
+    <div x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches), sidebarOpen: false }" x-init="$watch('darkMode', val => { localStorage.setItem('darkMode', val); document.documentElement.classList.toggle('dark', val); })" :class="{ 'dark': darkMode }" x-cloak>
+        <!-- Header -->
+        <header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <button @click="sidebarOpen = true" class="mr-4 md:hidden text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                        <div class="flex items-center">
+                            <i class="fas fa-robot text-primary-600 dark:text-primary-400 text-2xl mr-3"></i>
+                            <h1 class="text-xl font-bold text-gray-900 dark:text-white">WPS AI 模型管理</h1>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button @click="darkMode = !darkMode" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                            <i x-show="!darkMode" class="fas fa-moon text-gray-600"></i>
+                            <i x-show="darkMode" class="fas fa-sun text-yellow-400"></i>
+                        </button>
+                        <div class="hidden md:block h-8 w-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
+                            A
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <div class="fixed inset-0 z-50 md:hidden" x-show="sidebarOpen" @click="sidebarOpen = false" style="display: none;"></div>
+        <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform md:translate-x-0 transition-transform duration-300 ease-in-out" 
+               :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }" 
+               @click.away="sidebarOpen = false">
+            <div class="flex flex-col h-full">
+                <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">导航菜单</h2>
+                    <button @click="sidebarOpen = false" class="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <i class="fas fa-times text-gray-500 dark:text-gray-400"></i>
+                    </button>
+                </div>
+                <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+                    <a href="#intro" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-info-circle mr-3 text-gray-500 dark:text-gray-400"></i>
+                        功能介绍
+                    </a>
+                    <a href="#prerequisites" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-clipboard-check mr-3 text-gray-500 dark:text-gray-400"></i>
+                        前置条件
+                    </a>
+                    <a href="#add-model" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-plus-circle mr-3 text-gray-500 dark:text-gray-400"></i>
+                        添加模型
+                    </a>
+                    <a href="#switch-model" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-exchange-alt mr-3 text-gray-500 dark:text-gray-400"></i>
+                        切换模型
+                    </a>
+                    <a href="#monitoring" class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-chart-line mr-3 text-gray-500 dark:text-gray-400"></i>
+                        模型监控
+                    </a>
+                </nav>
+                <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
+                            A
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">管理员</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">超级管理员</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:ml-64">
+            <!-- Introduction -->
+            <section id="intro" class="mb-12 animate-fade-in">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-info-circle text-primary-500 mr-2 text-xl"></i>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">功能介绍</h2>
+                        </div>
+                        <div class="prose dark:prose-invert max-w-none">
+                            <p>WPS AI 模型管理系统允许管理员灵活切换企业部门/成员的 AI 应用模型，满足企业对于「自采/自研模型」的需求。</p>
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-gray-900 dark:text-white flex items-center">
+                                    <i class="fas fa-user-shield mr-2"></i>
+                                    操作权限
+                                </h3>
+                                <p>仅限<strong>超级管理员</strong>或拥有<strong>「AI 管理」权限</strong>的管理员操作</p>
+                            </div>
+                            <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                                <h3 class="font-semibold text-blue-800 dark:text-blue-200 flex items-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>
+                                    应用场景
+                                </h3>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>符合企业 AI 管控需求</li>
+                                    <li>支持自定义调优的企业场景</li>
+                                    <li>员工使用时将自动应用配置的模型</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Prerequisites -->
+            <section id="prerequisites" class="mb-12 animate-fade-in">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-clipboard-check text-primary-500 mr-2 text-xl"></i>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">前置条件</h2>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-key mr-2 text-yellow-500"></i>
+                                    开通企业 B 端 AI 权益
+                                </h3>
+                                <p class="text-gray-600 dark:text-gray-300">目前为小范围放量，请联系对应销售申请开通</p>
+                            </div>
+                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-building mr-2 text-blue-500"></i>
+                                    完成企业认证
+                                </h3>
+                                <div class="grid grid-cols-2 gap-2 mt-3">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="cert1" class="rounded text-primary-600 focus:ring-primary-500">
+                                        <label for="cert1" class="ml-2 text-sm text-gray-700 dark:text-gray-300">企业概况</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="cert2" class="rounded text-primary-600 focus:ring-primary-500">
+                                        <label for="cert2" class="ml-2 text-sm text-gray-700 dark:text-gray-300">项目名称</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="cert3" class="rounded text-primary-600 focus:ring-primary-500">
+                                        <label for="cert3" class="ml-2 text-sm text-gray-700 dark:text-gray-300">安全管控</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="cert4" class="rounded text-primary-600 focus:ring-primary-500">
+                                        <label for="cert4" class="ml-2 text-sm text-gray-700 dark:text-gray-300">数据采集</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="cert5" class="rounded text-primary-600 focus:ring-primary-500">
+                                        <label for="cert5" class="ml-2 text-sm text-gray-700 dark:text-gray-300">数据处理</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="cert6" class="rounded text-primary-600 focus:ring-primary-500">
+                                        <label for="cert6" class="ml-2 text-sm text-gray-700 dark:text-gray-300">订单状态</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Model -->
+            <section id="add-model" class="mb-12 animate-fade-in">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-plus-circle text-primary-500 mr-2 text-xl"></i>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">添加 AI 模型</h2>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                <i class="fas fa-map-marker-alt mr-2 text-green-500"></i>
+                                操作路径
+                            </h3>
+                            <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                                <span class="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">WPS 365 管理后台</span>
+                                <i class="fas fa-chevron-right text-xs"></i>
+                                <span class="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">AI 管理</span>
+                                <i class="fas fa-chevron-right text-xs"></i>
+                                <span class="bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">模型管理</span>
+                                <i class="fas fa-chevron-right text-xs"></i>
+                                <span class="bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-3 py-1 rounded-full">添加模型</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                <i class="fas fa-list-ul mr-2 text-purple-500"></i>
+                                支持的模型类型
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-brain text-blue-500"></i>
+                                    </div>
+                                    <span>DeepSeek</span>
+                                </div>
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="w-8 h-8 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fab fa-microsoft text-green-500"></i>
+                                    </div>
+                                    <span>GPT (Azure)</span>
+                                </div>
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-robot text-purple-500"></i>
+                                    </div>
+                                    <span>MiniMax</span>
+                                </div>
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="w-8 h-8 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-cloud text-red-500"></i>
+                                    </div>
+                                    <span>文心一言</span>
+                                </div>
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/50 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-star text-yellow-500"></i>
+                                    </div>
+                                    <span>智谱清言</span>
+                                </div>
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/50 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-question text-indigo-500"></i>
+                                    </div>
+                                    <span>通义千问</span>
+                                </div>
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center">
+                                    <div class="w-8 h-8 bg-pink-100 dark:bg-pink-900/50 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-cog text-pink-500"></i>
+                                    </div>
+                                    <span>自定义模型</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                <i class="fas fa-key mr-2 text-orange-500"></i>
+                                模型配置示例 (DeepSeek)
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">选项</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">引导</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">入口展示</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">调用标准api</td>
+                                            <td class="px-6 py-4 whitespace-normal text-sm text-gray-500 dark:text-gray-400">
+                                                官方api已预填，不需修改<br>
+                                                <code class="text-xs">https://api.deepseek.com/chat/completions</code><br>
+                                                火山: <code class="text-xs">https://ark.cn-beijing.voices.com/api/v3/chat/completions</code><br>
+                                                阿里: <code class="text-xs">https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions</code>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">apiKey</td>
+                                            <td class="px-6 py-4 whitespace-normal text-sm text-gray-500 dark:text-gray-400">
+                                                密钥，DeepSeek部署平台内获取：<br>
+                                                <code class="text-xs">https://platform.deeps.eek.com/api_keys</code><br><br>
+                                                密码，火山部署平台内获取：<br>
+                                                <code class="text-xs">https://console.voicengine.com/ark/region:ark+cn-beijing/apiKey</code><br><br>
+                                                密钥，阿里云部署平台内获取：<br>
+                                                <code class="text-xs">https://baillian.console.aliyun.com/?apiKey=1#/api-key</code>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">model</td>
+                                            <td class="px-6 py-4 whitespace-normal text-sm text-gray-500 dark:text-gray-400">
+                                                [选填] 接入点名称，上架第三方部署模型才需填入<br>
+                                                [火山] 获取入口：火山引擎-模型推理-在线推理<br>
+                                                [阿里] 获取入口：配置模型名称
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">-</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                            <h4 class="font-semibold text-yellow-800 dark:text-yellow-200 flex items-center">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                注意事项
+                            </h4>
+                            <ul class="list-disc pl-5 mt-2 text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                                <li>不同模型需要配置的参数不同，请参考具体模型的文档</li>
+                                <li>自定义模型需要符合 OpenAI 接口规范</li>
+                                <li>确保 API 密钥等敏感信息的安全存储</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Switch Model -->
+            <section id="switch-model" class="mb-12 animate-fade-in">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-exchange-alt text-primary-500 mr-2 text-xl"></i>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">切换 AI 模型</h2>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-sitemap mr-2 text-green-500"></i>
+                                    支持的功能范围
+                                </h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        智能问答
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        AI 问问
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        写作助手
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        阅读助手
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        AI 生成 PPT
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-users mr-2 text-blue-500"></i>
+                                    配置范围
+                                </h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-user text-blue-500 mr-2"></i>
+                                        单个成员
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-users-cog text-blue-500 mr-2"></i>
+                                        部门/团队
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-building text-blue-500 mr-2"></i>
+                                        全企业
+                                    </li>
+                                </ul>
+                                <div class="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded">
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">建议先小范围配置，测试模型效果后再全面放开</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold mb-3 flex items-center">
+                                <i class="fas fa-random mr-2 text-purple-500"></i>
+                                切换操作指引
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-300 font-bold mr-4">1</div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">选中应用，添加策略配置</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">进入 WPS 365 管理后台，点击 AI 管理 > 模型管理，选择需要切换模型的应用</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-300 font-bold mr-4">2</div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">配置成员切换模型</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">选择需要应用新模型的成员或部门范围</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-300 font-bold mr-4">3</div>
+                                    <div>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">策略生效</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">新增策略成功后立即生效，配置成员将使用选中模型</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <h4 class="font-semibold text-blue-800 dark:text-blue-200 flex items-center">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                策略优先级规则
+                            </h4>
+                            <p class="mt-2 text-sm text-blue-700 dark:text-blue-300">当一个用户命中多条策略时，按照以下规则生效：</p>
+                            <ul class="list-disc pl-5 mt-1 text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                                <li><strong>用户</strong> > <strong>用户组</strong> > <strong>团队</strong> > <strong>子部门</strong> > <strong>父部门</strong></li>
+                                <li>若同时存在多个用户组/子部门时，以最新策略为准</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monitoring -->
+            <section id="monitoring" class="mb-12 animate-fade-in">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden card-hover transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-chart-line text-primary-500 mr-2 text-xl"></i>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">模型监控与分析</h2>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-chart-bar mr-2 text-green-500"></i>
+                                    模型监控
+                                </h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">实时监控模型调用情况和性能指标</p>
+                                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 h-40 flex items-center justify-center">
+                                    <p class="text-gray-500 dark:text-gray-400 text-center">请求数量趋势图表<br>模型返回耗时图表</p>
+                                </div>
+                                <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                    路径: AI 管理 > 模型管理 > (选中模型) 模型监控
+                                </div>
+                            </div>
+                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-lg mb-3 flex items-center">
+                                    <i class="fas fa-clipboard-list mr-2 text-blue-500"></i>
+                                    模型日志
+                                </h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">查看所有用户使用 AI 功能的详细记录</p>
+                                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 h-40 flex items-center justify-center">
+                                    <p class="text-gray-500 dark:text-gray-400 text-center">AI 使用情况日志表格</p>
+                                </div>
+                                <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                    路径: AI 管理 > AI 使用情况
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="mt-12 border-t border-gray-200 dark:border-gray-800 pt-8 pb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">WPS AI 模型管理系统</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">企业级 AI 模型管理与切换解决方案</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="https://twitter.com/example" class="text-gray-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-6 text-center md:text-left">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        <span>作者: [Your Name]</span>
+                        <span class="mx-2">|</span>
+                        <span>© 2023 WPS AI 模型管理系统. 保留所有权利.</span>
+                    </p>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Alpine JS -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+    
+    <script>
+        // Simple animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const animateElements = document.querySelectorAll('.animate-fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animateElements.forEach(el => {
+                el.classList.add('opacity-0', 'translate-y-4', 'transition-all', 'duration-500', 'ease-out');
+                observer.observe(el);
+            });
+            
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Close mobile menu if open
+                        if (window.innerWidth < 768) {
+                            Alpine.store('sidebarOpen', false);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
