@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金山智慧校园配置助手 - 隐私政策</title>
+    <style>
+        :root {
+            --primary-color: #1e88e5;
+            --secondary-color: #0d47a1;
+            --text-color: #333;
+            --light-bg: #f5f7fa;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--light-bg);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-top: 30px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 25px;
+        }
+        
+        .last-update {
+            text-align: right;
+            font-style: italic;
+            color: #666;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .highlight-box {
+            background-color: white;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-radius: 0 4px 4px 0;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .permissions {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .permission-item {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .permission-item:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>金山智慧校园配置助手隐私政策</h1>
+        <p>最后更新日期：2025年4月28日</p>
+    </header>
+    
+    <section>
+        <h2>引言</h2>
+        <p>金山智慧校园配置助手是一款设计用于帮助用户自动配置金山智慧校园平台的 Chrome 扩展程序。本隐私政策旨在明确说明本扩展如何收集、使用和保护用户数据，以及我们对用户隐私的尊重和保护措施。</p>
+    </section>
+    
+    <section>
+        <h2>收集的信息</h2>
+        <p>本扩展仅收集以下类型的用户数据，且仅用于实现其功能：</p>
+        <ul>
+            <li><strong>认证信息</strong>：包括用户在 WPS 智慧校园平台（*.wps.cn 和 *.kdocs.cn 域名下）的 Cookie 和 CSRF 令牌。这些信息仅用于进行自动化配置操作。</li>
+            <li><strong>任务执行状态</strong>：记录用户启动的自动化配置任务的执行状态和日志。</li>
+            <li><strong>配置选择</strong>：用户在扩展中选择的配置选项，如模板类型（基教/高校）。</li>
+        </ul>
+        
+        <div class="highlight-box">
+            <strong>重要提示：</strong> 所有收集的数据仅存储在您的本地设备上，不会上传至任何服务器。
+        </div>
+    </section>
+    
+    <section>
+        <h2>数据使用</h2>
+        <p>收集的数据仅用于以下目的：</p>
+        <ul>
+            <li><strong>执行自动化配置</strong>：使用用户的认证信息向 WPS 智慧校园平台发送请求，执行应用上架、分组设置、工作台配置等自动化任务。</li>
+            <li><strong>状态恢复</strong>：使任务可以在中断后继续执行，无需重新开始。</li>
+            <li><strong>用户体验优化</strong>：基于用户的选择记忆上次的配置，避免重复输入。</li>
+        </ul>
+    </section>
+    
+    <section>
+        <h2>数据存储</h2>
+        <p>所有收集的数据都<strong>仅存储在用户本地设备</strong>上：</p>
+        <ul>
+            <li>扩展使用 Chrome 提供的 <code>storage.local</code> API 或 IndexedDB 进行数据存储，这些数据不会上传至任何云端服务器。</li>
+            <li>认证信息（Cookie 和 CSRF 令牌）仅保存在本地，并在与 WPS 服务器通信时使用。</li>
+        </ul>
+    </section>
+    
+    <section>
+        <h2>数据共享</h2>
+        <p>本扩展<strong>不会</strong>与任何第三方共享用户数据：</p>
+        <ul>
+            <li>收集的认证信息仅用于与 WPS 官方服务器（*.wps.cn 和 *.kdocs.cn）通信，这与用户直接在浏览器中访问这些网站时的行为一致。</li>
+            <li>不会将任何用户数据发送到非 WPS 官方的第三方服务器。</li>
+        </ul>
+    </section>
+    
+    <section>
+        <h2>权限使用说明</h2>
+        <p>本扩展请求以下权限，每项权限都是实现功能所必需的：</p>
+        
+        <div class="permissions">
+            <div class="permission-item"><strong>activeTab</strong>：用于与用户当前访问的 WPS 相关网站交互。</div>
+            <div class="permission-item"><strong>storage</strong>：用于在本地存储用户认证信息和配置数据。</div>
+            <div class="permission-item"><strong>scripting</strong>：用于在 WPS 网站上执行自动化操作的脚本。</div>
+            <div class="permission-item"><strong>sidePanel</strong>：用于提供扩展的用户界面。</div>
+            <div class="permission-item"><strong>cookies</strong>：用于读取 WPS 相关网站的 Cookie，获取必要的认证信息。</div>
+            <div class="permission-item"><strong>webRequest</strong>：用于向 WPS 服务器发送经过认证的网络请求。</div>
+            <div class="permission-item"><strong>主机权限</strong> (<code>*://*.wps.cn/*</code>, <code>*://*.kdocs.cn/*</code>)：仅用于与这些域名的服务器通信，执行自动化配置任务。</div>
+        </div>
+    </section>
+    
+    <section>
+        <h2>数据安全</h2>
+        <p>我们采取以下措施保护用户数据：</p>
+        <ul>
+            <li>仅收集执行任务所必需的最小数据集。</li>
+            <li>所有数据仅保存在用户本地设备上，不会上传至云端。</li>
+            <li>在控制台日志中隐藏敏感信息（如 Cookie 值、CSRF 令牌）。</li>
+            <li>不会处理与扩展功能无关的用户数据。</li>
+        </ul>
+    </section>
+    
+    <section>
+        <h2>数据删除</h2>
+        <p>如果您想删除扩展存储的所有数据：</p>
+        <ul>
+            <li>在 Chrome 浏览器中卸载扩展，这将自动清除所有由扩展存储的数据。</li>
+            <li>您也可以通过清除浏览器的站点数据（特别是关于 *.wps.cn 和 *.kdocs.cn 域名的数据）来移除相关 Cookie。</li>
+        </ul>
+    </section>
+    
+    <section>
+        <h2>政策更新</h2>
+        <p>本隐私政策可能会随着扩展功能的更新而变更。我们会在扩展更新时通知用户任何重大变更，并在 Chrome Web Store 的扩展页面保持政策的最新版本。</p>
+    </section>
+    
+    <section>
+        <h2>联系方式</h2>
+        <p>如果您对本隐私政策有任何疑问或顾虑，请通过 Chrome Web Store 扩展页面上提供的联系方式与我们联系。</p>
+    </section>
+    
+    <div class="last-update">
+        最后更新日期：2025年4月28日
+    </div>
+</body>
+</html>
